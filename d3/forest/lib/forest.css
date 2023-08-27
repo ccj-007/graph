@@ -1,0 +1,51 @@
+/* required LIB STYLES */
+/* .Forest se automatski dodaje na svaki chart conatiner */
+.Forest {
+    position: relative;
+    overflow: hidden;
+    padding: 0 !important;
+}
+
+.Forest>.node,
+.Forest>.pseudo {
+    position: absolute;
+    display: block;
+    visibility: hidden;
+}
+
+.Forest.Forest-loaded .node,
+.Forest.Forest-loaded .pseudo {
+    visibility: visible;
+}
+
+.Forest>.pseudo {
+    width: 0;
+    height: 0;
+    border: none;
+    padding: 0;
+}
+
+.Forest .collapse-switch {
+    width: 10px;
+    height: 10px;
+    display: block;
+    border-radius: 10px;
+    position: absolute;
+    top: 14px;
+    right: 1px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    background: #73c5e3;
+}
+
+.Forest .collapsed .collapse-switch {
+    background-color: #73c5e3;
+}
+
+.Forest>.node img {
+    border: none;
+    float: left;
+}

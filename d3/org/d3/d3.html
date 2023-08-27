@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>组织架构图</title>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+</head>
+
+<body>
+    <div id="chart"></div>
+    <script>
+        // 定义组织架构数据
+        var data = {
+            "name": "公司",
+            "children": [
+                {
+                    "name": "部门A",
+                    "children": [
+                        { "name": "员工A1" },
+                        { "name": "员工A2" },
+                        { "name": "员工A3" },
+                        { "name": "员工A4" },
+                        { "name": "员工A5" },
+                        { "name": "员工A6" },
+                    ]
+                },
+                {
+                    "name": "部门B",
+                    "children": [
+                        { "name": "员工B1" },
+                        { "name": "员工B2" },
+                        { "name": "员工B1" },
+                        { "name": "员工B2" },
+                        { "name": "员工B1" },
+                        { "name": "员工B1" },
+
+                    ]
+                }
+            ]
+        };
+
+        // 创建D3.js层级布局
+        var treeLayout = d3.tree().size([500, 300]);
+
+        // 将数据转换为层级布局的层次结构
+        var root = d3.hierarchy(data);
+
+        // 对层次结构进行布局
+        treeLayout(root);
+
+        // 创建SVG画布
+        var svg = d3.select("#chart")
+            .append("svg")
+            .attr("width", 600)
+            .attr("height", 400)
+            .append("g")
+            .attr("transform", "translate(50, 50)");
+
+        // 创建节点和连线
+        var nodes = svg.selectAll(".node")
+            .data(root.descendants())
+            .enter()
+            .append("g")
+            .attr("class", "node")
+            .attr("transform", function (d) { return "translate(" + d.y + "," + d.x + ")"; });
+
+        nodes.append("circle")
+            .attr("r", 5);
+
+        nodes.append("text")
+            .attr("x", 10)
+            .attr("dy", 5)
+            .text(function (d) { return d.data.name; });
+
+        svg.selectAll(".link")
+            .data(root.links())
+            .enter()
+            .append("path")
+            .attr("class", "link")
+            .attr("d", d3.linkHorizontal()
+                .x(function (d) { return d.y; })
+                .y(function (d) { return d.x; }));
+
+    </script>
+</body>
+
+</html>
