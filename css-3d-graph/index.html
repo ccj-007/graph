@@ -1,0 +1,279 @@
+<style>
+    :root {
+        --recW: 200px;
+        --recH0: 0;
+        --recH1: 0;
+        --recH2: 0;
+        --recH3: 0;
+    }
+
+
+
+    .cube-warp {
+        position: absolute;
+        top: 25%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .c1 {
+        transform: translateY(calc(var(--recH0) * -1));
+    }
+
+    .c2 {
+        transform: translateX(300px) translateY(calc(var(--recH1) * -1));
+    }
+
+    .c3 {
+        transform: translateX(600px) translateY(calc(var(--recH2) * -1));
+    }
+
+    .c4 {
+        transform: translateX(900px) translateY(calc(var(--recH3) * -1));
+    }
+
+
+
+    .cube {
+        width: 200px;
+        height: 0;
+        transform-style: preserve-3d;
+        perspective-origin: 50% 50%;
+        transform: perspective(12000px) translateY(400px) rotateY(-10deg);
+    }
+
+    .face {
+        position: absolute;
+        width: var(--recW);
+        opacity: 0.9;
+        text-align: center;
+        line-height: 400px;
+        font-size: 28px;
+    }
+
+    .c1 .face {
+        height: var(--recH0);
+    }
+
+    .c2 .face {
+        height: var(--recH1);
+    }
+
+    .c3 .face {
+        height: var(--recH2);
+    }
+
+    .c4 .face {
+        height: var(--recH3);
+    }
+
+    .face2 {
+        position: absolute;
+        width: var(--recW);
+        height: 200px;
+        opacity: 0.9;
+        text-align: center;
+    }
+
+    .xLabel {
+        position: relative;
+        top: -120px;
+        left: -40px;
+    }
+
+    .front {
+        background-color: #ff0606;
+        transform: translateZ(calc(var(--recW) / 2));
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .back {
+        background-color: #700909;
+        transform: translateZ(calc(var(--recW) / 2 * -1)) rotateY(180deg);
+    }
+
+    .left {
+        background-color: #700909;
+        transform: translateX(calc(var(--recW) / 2 * -1)) rotateY(-90deg);
+    }
+
+    .right {
+        background-color: #700909;
+        transform: translateX(calc(var(--recW) / 2)) rotateY(90deg);
+    }
+
+    .top {
+        background-color: #ff3e3e;
+        transform: translateY(calc(var(--recW) / 2 * -1)) rotateX(90deg);
+    }
+
+    /* .bottom {
+        background-color: #ff0606;
+        transform: translateY(calc(var(--recH) - 100px)) rotateX(-90deg);
+    } */
+
+    .cube:hover .front,
+    .cube:hover .back,
+    .cube:hover .left,
+    .cube:hover .right,
+    .cube:hover .top,
+    .cube:hover .bottom {
+        opacity: .8;
+        filter: blur(.7);
+        transition: .2s all linear;
+        cursor: pointer;
+        color: #fff;
+    }
+
+    .cube:hover .front-txt {
+        display: block;
+    }
+
+    .cube-max .front-txt {
+        display: block !important;
+        color: #fff;
+    }
+
+    .cube-max {
+        display: block !important;
+    }
+
+    .cube:hover .front,
+    .cube:hover .back,
+    .cube:hover .left {
+        background-color: #3a1cbd;
+    }
+
+    .cube:hover .right {
+        background-color: #140263;
+    }
+
+    .cube:hover .top,
+    .cube:hover .bottom {
+        background-color: #866bff;
+    }
+
+    .front .front-txt {
+        display: none;
+    }
+</style>
+<link rel="stylesheet" href="./bg-cube.css">
+
+<body>
+    <div class="cube-warp">
+        <div class="bg-cube">
+            <div class="yAxis">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+            <div class="xAxis">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+            <div class="bg-face bg-front">
+            </div>
+            <div class="bg-face bg-back"></div>
+            <div class="bg-face bg-left"></div>
+            <div class="bg-face2 bg-bottom"></div>
+        </div>
+        <div class="c1">
+            <div class="cube">
+                <div class="face front">
+                </div>
+                <div class="face back"></div>
+                <div class="face left"></div>
+                <div class="face right"></div>
+                <div class="face2 top"></div>
+            </div>
+        </div>
+        <div class="c2">
+            <div class="cube">
+                <div class="face front">
+                </div>
+                <div class="face back"></div>
+                <div class="face left"></div>
+                <div class="face right"></div>
+                <div class="face2 top"></div>
+            </div>
+        </div>
+        <div class="c3">
+            <div class="cube">
+                <div class="face front"></div>
+                <div class="face back"></div>
+                <div class="face left"></div>
+                <div class="face right"></div>
+                <div class="face2 top"></div>
+            </div>
+        </div>
+        <div class="c4">
+            <div class="cube">
+                <div class="face front"></div>
+                <div class="face back"></div>
+                <div class="face left"></div>
+                <div class="face right"></div>
+                <div class="face2 top"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const config = {
+            xAxis: ["2040Q1", '2040Q2', '2040Q3', '2040Q3'],
+            yAxis: ["400亿", "300亿", "200亿", "100亿", "0亿"],
+            maxY: 400,
+            data: [
+                {
+                    quarter: 'Q1',
+                    val: 200,
+                },
+                {
+                    quarter: 'Q2',
+                    val: 100,
+                },
+                {
+                    quarter: 'Q3',
+                    val: 300,
+                },
+                {
+                    quarter: 'Q4',
+                    val: 50,
+                }
+            ]
+        }
+        const cubes = document.querySelectorAll('.cube');
+        const maxId = config.data.findIndex(item => item.val === Math.max(...config.data.map(item => item.val)))
+
+        cubes[maxId].className = 'cube cube-max'
+        // 设置每个柱子的高度
+        const root = document.documentElement;
+
+
+        console.log("maxId", maxId);
+        config.data.forEach((item, index) => {
+            const heightPercentage = item.val
+            root.style.setProperty(`--recH${index}`, `${heightPercentage}px`);
+        });
+        // 设置 val
+        const frontElements = document.querySelectorAll('.front');
+        config.data.forEach((item, index) => {
+            frontElements[index].innerHTML = `<div class='front-txt'>${item.val}亿</div>`;
+        })
+        // 设置 xAxis 的值
+        const xAxisElements = document.querySelectorAll('.xAxis > div');
+        for (let i = 0; i < config.xAxis.length; i++) {
+            xAxisElements[i].textContent = config.xAxis[i];
+        }
+
+        // 设置 yAxis 的值
+        const yAxisElements = document.querySelectorAll('.yAxis > div');
+        for (let i = 0; i < config.yAxis.length; i++) {
+            yAxisElements[i].textContent = config.yAxis[i];
+        }
+
+    </script>
+</body>

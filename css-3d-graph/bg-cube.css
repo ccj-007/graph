@@ -1,0 +1,80 @@
+.bg-cube {
+    width: 1200px;
+    height: 0;
+    position: relative;
+    bottom: 400px;
+    transform-style: preserve-3d;
+    transform: perspective(12000px) translateY(400px) rotateY(-10deg);
+    perspective-origin: 50% 50%;
+}
+
+.bg-face {
+    position: absolute;
+    width: 1200px;
+    height: 400px;
+    opacity: 0.8;
+    text-align: center;
+    line-height: 400px;
+    font-size: 48px;
+}
+
+.bg-face2 {
+    position: absolute;
+    width: 1200px;
+    height: 1200px;
+    opacity: 0.8;
+    text-align: center;
+    font-size: 48px;
+}
+
+.bg-front {
+    background-color: transparent;
+    transform: translateZ(600px);
+}
+
+
+.bg-back {
+    background-color: rgb(88, 88, 88);
+    transform: translateZ(-600px) rotateY(180deg);
+}
+
+.bg-left {
+    background-color: rgb(158, 158, 158);
+    transform: translateX(-600px) rotateY(-90deg);
+}
+
+
+.bg-bottom {
+    background-color: #e4e4e4;
+    transform: translateY(-200px) rotateX(-90deg);
+}
+
+.xAxis {
+    position: absolute;
+    left: -140px;
+    top: 450px;
+    width: 100%;
+    font-size: 28px;
+    display: flex;
+    text-align: right;
+}
+
+.xAxis div {
+    flex: 1;
+    text-align: center;
+}
+
+.yAxis {
+    position: absolute;
+    top: 20px;
+    left: -230px;
+    font-size: 28px;
+    height: 420px;
+    display: flex;
+    flex-direction: column;
+    text-align: right;
+}
+
+.yAxis div {
+    flex: 1;
+}

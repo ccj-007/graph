@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <canvas id="mainCanvas" width="400" height="400"></canvas>
+    <script>
+        const canvas = document.getElementById("mainCanvas");
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = "red";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        // 创建一个新的 Worker
+        const worker = new Worker("worker.js");
+
+        // 监听 Web Worker 发送的消息
+        worker.onmessage = function (event) {
+            // 获取处理后的像素数据
+            const processedData = event.data;
+
+            // 将处理后的像素数据绘制回 Canvas
+            const imageData = new ImageData(processedData, canvas.width, canvas.height);
+            ctx.putImageData(imageData, 0, 0);
+        };
+
+        // 获取 Canvas 上的像素数据
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const pixels = imageData.data;
+
+        // 将像素数据发送给 Web Worker 进行处理
+        worker.postMessage(pixels);
+    </script>
+</body>
+
+</html>

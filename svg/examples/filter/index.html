@@ -1,0 +1,39 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/css-doodle/0.4.8/css-doodle.min.js"></script>
+
+<css-doodle>
+    :doodle {
+    @grid: 50x1 / 100%;
+    @use: var(--filter);
+    }
+    :container {
+    animation: r 20s linear infinite;
+    }
+    @place-cell: center;
+    @size: 100% 2vmin;
+    background: @pd(#60569e, #e6437d, #ebbf4d);
+    transform-origin: 1vmin center;
+    transform:
+    translateX(50%)
+    rotate(calc(@i() * 360deg / @size()));
+
+    @keyframes r {
+    to { transform: rotate(1turn) }
+    }
+</css-doodle>
+
+<style>
+    html,
+    body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        background: #0A0D25;
+        overflow: hidden;
+    }
+
+    :root {
+        --filter: (filter: @svg-filter(<svg> <filter> <feTurbulence type="fractalNoise"
+                    baseFrequency=".02" numOctaves="1" /> <feDisplacementMap in="SourceGraphic" scale="240" /> </filter> </svg>);
+            );
+    }
+</style>

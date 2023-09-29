@@ -1,0 +1,235 @@
+<html>
+<style>
+    body {
+        background: #24292e;
+    }
+
+    .wrapper {
+        position: absolute;
+        width: 400px;
+        height: 400px;
+        margin: auto;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        flex-direction: row;
+    }
+
+    .container {
+        flex: 1;
+        padding: 0 20px;
+    }
+</style>
+
+<body>
+    <div class="wrapper">
+        <div class="container chart" data-size="400" data-value="100" data-arrow="up">
+        </div>
+    </div>
+
+    <script>
+        class Dial {
+            // 接收一个容器元素作为参数，并初始化一些属性，如尺寸、描边宽度、半径、初始值和箭头方向。
+            constructor(container) {
+                this.container = container;
+                this.size = this.container.dataset.size;
+                this.strokeWidth = this.size / 8;
+                this.radius = (this.size / 2) - (this.strokeWidth / 2);
+                this.value = this.container.dataset.value;
+                this.direction = this.container.dataset.arrow;
+                this.svg;
+                this.defs;
+                this.slice;
+                this.overlay;
+                this.text;
+                this.arrow;
+                this.create();
+            }
+
+            // 创建SVG元素及其子元素，并将它们添加到容器中
+            create() {
+                // 画布
+                this.createSvg();
+                // 创建引用，定义渐变
+                this.createDefs();
+                // 进度条路径
+                this.createSlice();
+                // 圆环背景
+                this.createOverlay();
+
+                // 文本
+                this.createText();
+                // 进度条
+                this.createArrow();
+                // 开始渲染
+                this.container.appendChild(this.svg);
+            }
+
+            // 创建一个SVG元素，并设置其宽度和高度
+            createSvg() {
+                let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                svg.setAttribute('width', this.size + 'px');
+                svg.setAttribute('height', this.size + 'px');
+                this.svg = svg;
+            }
+
+            // 创建SVG的defs元素，并定义渐变效果。 
+            createDefs() {
+                let defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+                let linearGradient = document.createElementNS("http://www.w3.org/2000/svg", "linearGradient");
+                linearGradient.setAttribute('id', 'gradient');
+                let stop1 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+                stop1.setAttribute('stop-color', '#6E4AE2');
+                stop1.setAttribute('offset', '0%');
+                linearGradient.appendChild(stop1);
+                let stop2 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+                stop2.setAttribute('stop-color', '#78F8EC');
+                stop2.setAttribute('offset', '100%');
+                linearGradient.appendChild(stop2);
+                let linearGradientBackground = document.createElementNS("http://www.w3.org/2000/svg", "linearGradient");
+                linearGradientBackground.setAttribute('id', 'gradient-background');
+                stop1 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+                stop1.setAttribute('stop-color', 'rgba(0, 0, 0, 0.2)');
+                stop1.setAttribute('offset', '0%');
+                linearGradientBackground.appendChild(stop1);
+                stop2 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+                stop2.setAttribute('stop-color', 'rgba(0, 0, 0, 0.05)');
+                stop2.setAttribute('offset', '100%');
+                linearGradientBackground.appendChild(stop2);
+                defs.appendChild(linearGradient);
+                defs.appendChild(linearGradientBackground);
+                this.svg.appendChild(defs);
+                this.defs = defs;
+            }
+
+            // 创建一个路径元素，用于绘制仪表盘的刻度。 
+            createSlice() {
+                let slice = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                slice.setAttribute('fill', 'none');
+                slice.setAttribute('stroke', 'url(#gradient)');
+                slice.setAttribute('stroke-width', this.strokeWidth);
+                slice.setAttribute('transform', 'translate(' + this.strokeWidth / 2 + ',' + this.strokeWidth / 2 + ')');
+                slice.setAttribute('class', 'animate-draw');
+                this.svg.appendChild(slice);
+                this.slice = slice;
+            }
+
+            // 创建一个圆形元素，用于覆盖仪表盘的背景。 
+            createOverlay() {
+                let r = this.size - (this.size / 2) - this.strokeWidth / 2;
+                let circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                circle.setAttribute('cx', this.size / 2);
+                circle.setAttribute('cy', this.size / 2);
+                circle.setAttribute('r', r);
+                circle.setAttribute('fill', 'url(#gradient-background)');
+                this.svg.appendChild(circle);
+                this.overlay = circle;
+            }
+
+            // 创建一个文本元素，用于显示百分比。  
+            createText() {
+                let fontSize = this.size / 3.5;
+                let text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                text.setAttribute('x', (this.size / 2) + fontSize / 7.5);
+                text.setAttribute('y', (this.size / 2) + fontSize / 4);
+                text.setAttribute('font-family', 'Century Gothic, Lato');
+                text.setAttribute('font-size', fontSize);
+                text.setAttribute('fill', '#78F8EC');
+                text.setAttribute('text-anchor', 'middle');
+                let tspanSize = fontSize / 3;
+                text.innerHTML = 0 + '<tspan font-size="' + tspanSize + '" dy="' + -tspanSize * 1.2 + '">%</tspan>';
+                this.svg.appendChild(text);
+                this.text = text;
+            }
+
+
+            // 创建一个箭头元素，用于指示当前百分比。 
+            createArrow() {
+                let arrowSize = this.size / 10;
+                let arrowYOffset, m;
+                if (this.direction === 'up') {
+                    arrowYOffset = arrowSize / 2;
+                    m = -1;
+                }
+                else if (this.direction === 'down') {
+                    arrowYOffset = 0;
+                    m = 1;
+                }
+                let arrowPosX = ((this.size / 2) - arrowSize / 2);
+                let arrowPosY = (this.size - this.size / 3) + arrowYOffset;
+                let arrowDOffset = m * (arrowSize / 1.5);
+                let arrow = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                arrow.setAttribute('d', 'M 0 0 ' + arrowSize + ' 0 ' + arrowSize / 2 + ' ' + arrowDOffset + ' 0 0 Z');
+                arrow.setAttribute('fill', '#97F8F0');
+                arrow.setAttribute('opacity', '0.6');
+                arrow.setAttribute('transform', 'translate(' + arrowPosX + ',' + arrowPosY + ')');
+                this.svg.appendChild(arrow);
+                this.arrow = arrow;
+            }
+
+            // 根据设定的百分比值开始动画效果。 
+            animateStart() {
+                let v = 0;
+                let self = this;
+                let intervalOne = setInterval(function () {
+                    let p = +(v / self.value).toFixed(2);
+                    // 定义速率
+                    let a = (p < 0.95) ? 2 - (2 * p) : 0.05;
+                    v += a;
+                    // 停止动画
+                    if (v >= +self.value) {
+                        v = self.value;
+                        clearInterval(intervalOne);
+                    }
+                    self.setValue(v);
+                }, 10);
+            }
+
+            // 重置百分比值为0，停止动画效果。 
+            animateReset() {
+                this.setValue(0);
+            }
+
+            // 将极坐标转换为笛卡尔坐标。
+            polarToCartesian(centerX, centerY, radius, angleInDegrees) {
+                let angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
+                return {
+                    x: centerX + (radius * Math.cos(angleInRadians)),
+                    y: centerY + (radius * Math.sin(angleInRadians))
+                };
+            }
+
+            // 根据起始角度和终止角度描述一个弧
+            describeArc(x, y, radius, startAngle, endAngle) {
+                let start = this.polarToCartesian(x, y, radius, endAngle);
+                let end = this.polarToCartesian(x, y, radius, startAngle);
+                let largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+                let d = [
+                    "M", start.x, start.y,
+                    "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y
+                ].join(" ");
+                return d;
+            }
+
+            // 根据给定的百分比值更新仪表盘的显示。 
+            setValue(value) {
+                let c = (value / 100) * 360;
+                if (c === 360) c = 359.99;
+                let xy = this.size / 2 - this.strokeWidth / 2;
+                let d = this.describeArc(xy, xy, xy, 180, 180 + c);
+                this.slice.setAttribute('d', d);
+                let tspanSize = (this.size / 3.5) / 3;
+                this.text.innerHTML = Math.floor(value) + '<tspan font-size="' + tspanSize + '" dy="' + -tspanSize * 1.2 + '">%</tspan>';
+            }
+        }
+
+        // 创建一个Dial实例，并通过调用 animateStart 方法开始动画效果
+        let containers = document.getElementsByClassName("chart");
+        let dial = new Dial(containers[0]);
+        dial.animateStart();
+    </script>
+</body>
+
+</html>

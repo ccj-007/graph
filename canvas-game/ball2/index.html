@@ -1,0 +1,104 @@
+<style>
+    body {
+        background: #ffffff;
+    }
+</style>
+<canvas id="canvas" width="600" height="600"></canvas>
+<script>
+    let canvas = document.getElementById('canvas');
+    let ctx = canvas.getContext('2d')
+    let timer = null
+    let balls = [
+        { x: 100, y: 100, iDirX: 1, iDirY: 1, color: 'rgba(0,255,255,0.4)' },
+        { x: 200, y: 200, iDirX: -0.5, iDirY: -1, color: 'rgba(0,255,255,0.4)' },
+        { x: 200, y: 500, iDirX: -1, iDirY: 1, color: 'rgba(0,255,255,0.4)' },
+        { x: 500, y: 200, iDirX: 1, iDirY: -1, color: 'rgba(255,1,2,0.4)' },
+        { x: 800, y: 100, iDirX: 1, iDirY: 1, color: 'rgba(0,255,255,0.4)' },
+        { x: 500, y: 400, iDirX: -1, iDirY: -1, color: 'rgba(0,255,255,0.4)' },
+        { x: 400, y: 600, iDirX: -1, iDirY: 1, color: 'rgba(0,255,255,0.4)' },
+        { x: 800, y: 300, iDirX: 1, iDirY: 1, color: 'rgba(255,1,2,0.4)' },
+        { x: 300, y: 400, iDirX: -1, iDirY: -1.5, color: 'rgba(255,1,2,0.4)' },
+        { x: 400, y: 200, iDirX: -1, iDirY: 1, color: 'rgba(0,255,255,0.4)' },
+        { x: 150, y: 150, iDirX: 1, iDirY: 1, color: 'rgba(255,1,2,0.5)' },
+        { x: 250, y: 240, iDirX: -1, iDirY: -1, color: 'rgba(0,255,255,0.4)' },
+        { x: 250, y: 530, iDirX: -1, iDirY: 1, color: 'rgba(255,1,2,0.4)' },
+        { x: 550, y: 220, iDirX: 2, iDirY: -1, color: 'rgba(0,255,255,0.4)' },
+        { x: 850, y: 110, iDirX: 1, iDirY: 1, color: 'rgba(0,255,255,0.4)' },
+        { x: 550, y: 450, iDirX: -1, iDirY: -1, color: 'rgba(255,1,2,0.4)' },
+        { x: 450, y: 640, iDirX: -1, iDirY: 1, color: 'rgba(255,1,2,0.4)' },
+        { x: 850, y: 320, iDirX: 1, iDirY: 0.3, color: 'rgba(0,255,255,0.4)' },
+        { x: 350, y: 480, iDirX: -1, iDirY: -1, color: 'rgba(0,255,255,0.4)' },
+        { x: 450, y: 270, iDirX: -1, iDirY: 1, color: 'rgba(0,255,255,0.4)' },
+        { x: 350, y: 150, iDirX: 0.8, iDirY: -1, color: 'rgba(255,1,2,0.4)' }
+    ];
+    function gameLoop() {
+        ctx.clearRect(0, 0, 1000, 800);
+        for (let i = 0, l = balls.length; i < l; i++) {
+            fnChange(balls[i]);
+            checkPeng(balls, i);
+        }
+        requestAnimationFrame(gameLoop);
+    }
+    gameLoop()
+
+    //	改变圆心坐标
+    function fnChange(obj) {
+        drawArc(obj);
+        obj.x += obj.iDirX * 10 / 4;
+        obj.y += obj.iDirY * 5 / 4;
+
+        if (obj.x >= 1000 - 50) {
+            obj.x = 1000 - 50;
+            obj.iDirX = -1 * obj.iDirX;
+        } else if (obj.x <= 50) {
+            obj.x = 50;
+            obj.iDirX = -1 * obj.iDirX;
+        }
+        if (obj.y >= 800 - 50) {
+            obj.y = 800 - 50;
+            obj.iDirY = -1 * obj.iDirY;
+        } else if (obj.y <= 50) {
+            obj.y = 50;
+            obj.iDirY = -1 * obj.iDirY;
+        }
+    }
+    //画圆
+    function drawArc(obj) {
+        ctx.save();
+        ctx.fillStyle = obj.color;
+        ctx.beginPath();
+        ctx.arc(obj.x % 1000, obj.y % 800, 50, 0, 2 * Math.PI);
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+        ctx.shadowBlur = 10;
+        ctx.shadowOffsetX = 15;
+        ctx.shadowOffsetY = 15;
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+    }
+    //碰撞检测
+    function checkPeng(arr, i) {
+        let j, len;
+
+        for (j = 0, len = arr.length; j < len; j++) {
+            if (i === j) { continue; }
+            let z = Math.sqrt(Math.pow((arr[i].x - arr[j].x), 2) + Math.pow((arr[i].y - arr[j].y), 2));
+            let cha = z - 100;
+            if (cha <= 0) {
+                if (arr[i].x < arr[j].x) {
+                    arr[i].x += cha;
+                } else {
+                    arr[i].x += -cha;
+                }
+                if (arr[i].y < arr[j].y) {
+                    arr[i].y += cha;
+                } else {
+                    arr[i].y += -cha;
+                }
+                arr[i].iDirY = -1 * arr[i].iDirY;
+                arr[i].iDirX = -1 * arr[i].iDirX;
+            }
+        }
+    }
+
+</script>

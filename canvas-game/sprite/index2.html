@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            background: #000;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        class Canvas {
+            constructor() {
+                this.create()
+            }
+
+            create() {
+                this.canvas = document.createElement('canvas');
+                this.ctx = this.canvas.getContext('2d');
+                document.body.appendChild(this.canvas);
+                this.canvas.width = 300
+                this.canvas.height = 300
+            }
+        }
+
+        class AnimationPlayer extends Canvas {
+            imgRenderNum = 0
+            renderId = 0
+            spriteList = []
+            curSprite = null
+            frameX = 0
+            frameY = 0
+            currentFrame = 0
+            status = 'play'
+
+            constructor(spriteList) {
+                super()
+                this.spriteList = spriteList
+                this.spriteNum = spriteList.length
+                spriteList.forEach(item => {
+                    item.spriteImage.onload = () => {
+                        this.imgRenderNum++
+                        if (this.imgRenderNum === this.spriteNum) {
+                            // 此时图片加载完毕
+                            this.renderSprite()
+                        }
+                    }
+                })
+            }
+            renderSprite() {
+                this.curSprite = this.spriteList[this.renderId]
+                this.gameLoop()
+            }
+
+            // 渲染下一个精灵
+            forward_render() {
+                this.renderId++
+                this.renderSprite()
+            }
+            // 返回上一个精灵渲染
+            back_render() {
+                this.renderId = 0
+                this.renderSprite()
+            }
+
+            // 清理渲染
+            clear_render() {
+                cancelAnimationFrame(this.animationId)
+            }
+
+            puase() {
+                this.status === 'puase'
+            }
+
+            play() {
+                this.status === 'play'
+            }
+
+            drawSprite() {
+                const { spriteImage, frameWidth, frameHeight } = this.curSprite
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                this.ctx.drawImage(
+                    spriteImage,
+                    this.frameX * frameWidth,
+                    this.frameY * frameHeight,
+                    frameWidth,
+                    frameHeight,
+                    0,
+                    0,
+                    frameWidth,
+                    frameHeight
+                );
+            }
+
+            updateFrame() {
+                if (this.status === 'pause') return
+
+                const { spriteImage, frameWidth, frameHeight, frameRate } = this.curSprite
+                this.currentFrame++;
+                if (this.currentFrame >= frameRate) {
+                    this.currentFrame = 0;
+                    this.frameX++;
+                    if (this.frameX >= Math.floor(spriteImage.width / frameWidth)) {
+                        this.frameX = 0;
+                        this.frameY++;
+
+                        if (this.frameY >= spriteImage.height / frameHeight) {
+                            this.frameY = 0;
+
+                            this.clear_render()
+                            if (this.spriteList[this.renderId + 1]) {
+                                this.forward_render()
+                            } else {
+                                this.back_render()
+                            }
+                        }
+                    }
+                }
+            }
+            gameLoop() {
+                this.updateFrame();
+                this.drawSprite();
+                this.animationId = requestAnimationFrame(() => {
+                    this.gameLoop()
+                });
+            }
+        }
+
+        class Sprite {
+            constructor(imagePath, frameWidth, frameHeight, frameRate) {
+                this.spriteImage = new Image();
+                this.spriteImage.src = imagePath;
+                this.frameWidth = frameWidth;
+                this.frameHeight = frameHeight;
+                this.frameRate = frameRate;
+                this.currentFrame = 0;
+            }
+        }
+
+        const spriteList = [new Sprite('./img/p1_spritesheet.png', 72.57, 99, 16), new Sprite('./img/NewerCampFire_2.png', 64, 64, 16)]
+
+        new AnimationPlayer(spriteList)
+    </script>
+</body>
+
+</html>

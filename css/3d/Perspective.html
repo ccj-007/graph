@@ -1,0 +1,63 @@
+<style>
+    .cube {
+        width: 400px;
+        height: 400px;
+        position: relative;
+        left: 200px;
+        top: 200px;
+        transform-style: preserve-3d;
+        transform: perspective(400px) rotateX(45deg) rotateY(45deg);
+    }
+
+    .face {
+        position: absolute;
+        width: 400px;
+        height: 400px;
+        opacity: 0.8;
+        border: 1px solid black;
+        text-align: center;
+        line-height: 400px;
+        font-size: 48px;
+    }
+
+    .front {
+        background-color: red;
+        transform: translateZ(200px);
+    }
+
+    .back {
+        background-color: blue;
+        transform: translateZ(-200px) rotateY(180deg);
+    }
+
+    .left {
+        background-color: green;
+        transform: translateX(-200px) rotateY(-90deg);
+    }
+
+    .right {
+        background-color: yellow;
+        transform: translateX(200px) rotateY(90deg);
+    }
+
+    .top {
+        background-color: orange;
+        transform: translateY(-200px) rotateX(90deg);
+    }
+
+    .bottom {
+        background-color: purple;
+        transform: translateY(200px) rotateX(-90deg);
+    }
+</style>
+
+<body>
+    <div class="cube">
+        <div class="face front">Front</div>
+        <div class="face back">Back</div>
+        <div class="face left">Left</div>
+        <div class="face right">Right</div>
+        <div class="face top">Top</div>
+        <div class="face bottom">Bottom</div>
+    </div>
+</body>

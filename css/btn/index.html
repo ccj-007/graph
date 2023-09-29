@@ -1,0 +1,123 @@
+<style>
+    @import url("https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap");
+
+    *,
+    *:before,
+    *:after {
+        box-sizing: border-box;
+        padding: 0;
+        margin: 0;
+    }
+
+    body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: hsl(0, 0%, 5%);
+        background: #000;
+        font-family: "Roboto", sans-serif;
+    }
+
+
+    button {
+        --top: 50%;
+        --left: 50%;
+        --size: 100%;
+        --background: #00E676;
+        --color: #282828;
+        /* :p */
+        --border: none;
+        color: var(--color);
+        background: var(--background);
+        border: 1px solid var(--border);
+        cursor: pointer;
+        font-family: inherit;
+        padding: 0.6rem 1rem 0.6rem 1.2rem;
+        font-size: 14px;
+        border-radius: 4px;
+        font-weight: 500;
+        text-transform: Capitalcase;
+        letter-spacing: 1px;
+        /* overflow and position matching the pseudo elements */
+        overflow: hidden;
+        position: relative;
+        /* remove the default outline
+        ! substituted with the pseudo elements
+        */
+        outline: none;
+    }
+
+    /* if existing, separate the inline icon from the text which follows */
+    button svg {
+        width: 1em;
+        height: auto;
+        display: inline-block;
+        margin-inline-end: 0.2rem;
+    }
+
+    /* with a pseudo element add a semitransparent layer with the same color of the text */
+    button:before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: currentColor;
+        border-radius: inherit;
+        opacity: 0;
+    }
+
+    button:after {
+        content: "";
+        position: absolute;
+        top: var(--top);
+        left: var(--left);
+        transform: translate(-50%, -50%);
+        width: var(--size);
+        height: var(--size);
+        background: currentColor;
+        clip-path: circle(0%);
+        opacity: 0.3;
+        border-radius: inherit;
+    }
+
+    button:active:after {
+        clip-path: circle(100%);
+        opacity: 0;
+        transition: clip-path 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53),
+            opacity 0.4s ease-in-out;
+        transition-delay: -0.1s, 0.5s;
+    }
+
+    .secondary:hover {
+        background: #e839ff;
+        color: #181818;
+    }
+</style>
+
+<button class="secondary" style="--background: rgba(255, 255, 255, 0.0); --color: #e839ff; --border: #e839ff;">
+    Click Button
+</button>
+
+<script>
+    const btn = document.querySelector("button");
+
+    function handleClick(e) {
+        const { layerX, layerY } = e;
+        const { width, height } = this.getBoundingClientRect();
+        console.log("🚀 ~ file: index.html:120 ~ handleClick ~ this:", this)
+
+        this.style.setProperty("--top", `${(layerY / height) * 100}%`);
+        this.style.setProperty("--left", `${(layerX / width) * 100}%`);
+
+        const dx = layerX > width / 2 ? layerX : width - layerX;
+        const dy = layerY > height / 2 ? layerY : height - layerY;
+        const size = Math.sqrt(dx ** 2 + dy ** 2) * 2;
+        this.style.setProperty("--size", `${size}px`);
+    }
+
+    btn.addEventListener("mousedown", handleClick);
+</script>

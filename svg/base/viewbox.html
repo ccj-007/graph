@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <svg class="svg" width="100" height="100" viewBox="0 0 50 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="100" cy="100" r="100" fill="red" />
+    </svg>
+
+    <!-- <svg width="115" height="190" viewBox="0 0 115 190">
+        <desc>Green pear to show effects of matching viewport and viewBox.</desc>
+        <g>
+            <path fill="#BBC42A" d="M4.976,126.451c-0.571,1.76-1.067,3.551-1.475,5.377c-6.62,29.681,7.465,54.363,43.244,56.718 c56.994,3.751,77.653-25.65,60.462-67.25C90.017,79.697,82.063,89.688,80.366,57.764c-0.764-14.367-11.098-27.167-26.203-24.576
+          c-17.378,2.982-19.794,19.916-22.192,34.44C28.36,89.508,11.623,105.957,4.976,126.451z" />
+            <path fill="none" stroke="#59351C" stroke-width="7" stroke-linecap="round" d="M56.427,40.406
+         c0,0-7.375-15.376,8.06-35.837" />
+            <path fill="#7AA20D" stroke="#7AA20D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
+                d="
+         M54.247,35.412c0.787-3.843,3.55-7.335,8.368-9.848c10.053-5.244,18.075-4.042,28.061,0.2c0.004,0.002,12.83,5.449,20.517-4.672
+          c-4.778,6.291-9.415,12.478-14.878,18.237c-8.878,9.359-25.348,22.181-37.176,9.661C55.019,44.629,53.349,39.793,54.247,35.412z" />
+        </g>
+    </svg> -->
+
+    <svg width="400px" height="200px">
+        <clipPath id="clip-text">
+            <text x="0" y="50%" fill="#f27678" font-size="120px" font-family=" 'Signika', sans-serif">Graph</text>
+        </clipPath>
+        <rect x="0" y="0" width="200" height="200" fill="#ed6e46" clip-path="url(#clip-text)" />
+        <circle cx="310" cy="100" r="135" fill="#bbc42a" clip-path="url(#clip-text)" />
+    </svg>
+
+    <svg width="620" height="200">
+        <path id="myPath"
+            d="M3.858,58.607 c16.784-5.985,33.921-10.518,51.695-12.99c50.522-7.028,101.982,0.51,151.892,8.283c17.83,2.777,35.632,5.711,53.437,8.628 c51.69,8.469,103.241,11.438,155.3,3.794c53.714-7.887,106.383-20.968,159.374-32.228c11.166-2.373,27.644-7.155,39.231-4.449"
+            fill="none" stroke="black" />
+        <text fill="#765373" font-size="30" font-family="'Lato', sans-serif">
+            <animateMotion dur="4s" repeatCount="indefinite">
+                <mpath xlink:href="#myPath" />
+            </animateMotion>
+            Graph
+        </text>
+    </svg>
+
+</body>
+
+</html>

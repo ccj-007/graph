@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./animation.css">
+</head>
+<style>
+
+</style>
+
+<body>
+    <script>
+        for (let a = 1; a <= 4; a++) {
+            const armDiv = document.createElement("div");
+            armDiv.classList.add("arm");
+
+            for (let b = 1; b <= 40; b++) {
+                const aDiv = document.createElement("div");
+                aDiv.classList.add("a");
+                armDiv.appendChild(aDiv);
+            }
+
+            document.body.appendChild(armDiv);
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    :root {
+        --w: 150px;
+        --r: 15px;
+    }
+
+    .pieContainer {
+        height: var(--w);
+        position: relative;
+    }
+
+    .pieBackground {
+        position: absolute;
+        width: var(--w);
+        height: var(--w);
+        border-radius: 100%;
+        box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.5);
+    }
+
+    .pie {
+        transition: all 1s;
+        width: var(--w);
+        height: var(--w);
+        border-radius: 100%;
+        clip-path: polygon(0% 0%, 50% 0%, 50% 100%, 0% 100%);
+    }
+
+    .hold {
+        position: absolute;
+        width: var(--w);
+        height: var(--w);
+        border-radius: 100%;
+        clip: rect(0px, var(--w), var(--w), calc(var(--w) / 2));
+    }
+
+    #pieSlice1 .pie {
+        background-color: #1b458b;
+        transform: rotate(30deg);
+    }
+
+    #pieSlice2 {
+        transform: rotate(30deg);
+    }
+
+    #pieSlice2 .pie {
+        background-color: #0a0;
+        transform: rotate(60deg);
+    }
+
+    #pieSlice3 {
+        transform: rotate(90deg);
+    }
+
+    #pieSlice3 .pie {
+        background-color: #f80;
+        transform: rotate(120deg);
+    }
+
+    #pieSlice4 {
+        transform: rotate(210deg);
+    }
+
+    #pieSlice4 .pie {
+        background-color: #08f;
+        transform: rotate(10deg);
+    }
+
+    #pieSlice5 {
+        transform: rotate(220deg);
+    }
+
+    #pieSlice5 .pie {
+        background-color: #a04;
+        transform: rotate(70deg);
+    }
+
+    #pieSlice6 {
+        transform: rotate(290deg);
+    }
+
+    #pieSlice6 .pie {
+        background-color: #ffd700;
+        transform: rotate(70deg);
+    }
+
+    /* 
+    .innerCircle {
+        position: absolute;
+        width: calc(var(--w) - 2 * var(--r));
+        height: 120px;
+        background-color: #ffffff;
+        border-radius: 100%;
+        top: var(--r);
+        left: var(--r);
+        box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.5) inset;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    } */
+</style>
+
+<body>
+    <div class="pieContainer">
+        <div class="pieBackground"></div>
+        <div id="pieSlice1" class="hold">
+            <div class="pie"></div>
+        </div>
+        <div id="pieSlice2" class="hold">
+            <div class="pie"></div>
+        </div>
+        <div id="pieSlice3" class="hold">
+            <div class="pie"></div>
+        </div>
+        <div id="pieSlice4" class="hold">
+            <div class="pie"></div>
+        </div>
+        <div id="pieSlice5" class="hold">
+            <div class="pie"></div>
+        </div>
+        <div id="pieSlice6" class="hold">
+            <div class="pie"></div>
+        </div>
+        <div class="innerCircle">
+        </div>
+    </div>
+    <script>
+        const option = {
+            data: [
+                {
+                    name: '苹果',
+                    val: 10,
+                },
+                {
+                    name: '橘子',
+                    val: 20,
+                },
+                {
+                    name: '香蕉',
+                    val: 5,
+                },
+                {
+                    name: '香梨',
+                    val: 15,
+                },
+                {
+                    name: '西瓜',
+                    val: 20,
+                },
+                {
+                    name: '菠萝',
+                    val: 30,
+                }
+            ]
+        }
+
+        const pieSlices = document.querySelectorAll('.hold');
+        const pie = document.querySelectorAll('.pie');
+
+        // 计算百分比val
+        option.data.forEach(item => {
+            item.val = (item.val / 100) * 360
+        })
+        let firstVal = option.data[0].val
+
+        // 计算每个pie的旋转角度
+        pieSlices.forEach((slice, index) => {
+            const angle = option.data[index].val; // 计算角度
+            pie[index].style.transform = `rotate(${angle}deg)`;
+        });
+
+        // 计算每个pie之前定位的旋转角度
+        option.data.forEach((item, index) => {
+            if (index > 0) {
+                const sum = firstVal + item.val
+                if (pieSlices[index + 1]) {
+                    pieSlices[index + 1].style.transform = `rotate(${sum}deg)`;
+                    firstVal = sum
+                }
+
+            } else {
+                pieSlices[1].style.transform = `rotate(${firstVal}deg)`;
+            }
+        })
+    </script>
+</body>
+
+</html>

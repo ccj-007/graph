@@ -1,0 +1,204 @@
+<style>
+    body {
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #1e1f26;
+        height: 100vh;
+    }
+
+    canvas {
+        margin: auto;
+    }
+</style>
+
+<canvas id="canvas"></canvas>
+
+<script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    let baseURL = 'https://raw.githubusercontent.com/aslanon/canvas-flappy-bird/master/src'
+    let game;
+
+    reset();
+
+    let constant;
+    let gap = 130;
+
+    let player = new Image();
+    let background = new Image();
+    let ground = new Image();
+    let blockTop = new Image();
+    let blockBottom = new Image();
+
+    player.src = game.images.player;
+    background.src = game.images.background;
+    ground.src = game.images.ground;
+    blockTop.src = game.images.blockN;
+    blockBottom.src = game.images.blockS;
+
+    let clickSound = new Audio();
+    clickSound.src = game.sounds.click;
+    let scoreSound = new Audio();
+    scoreSound.src = game.sounds.score;
+    let gameOver = new Audio();
+    gameOver.src = game.sounds.gameover;
+
+    function draw() {
+        if (game.player.y + player.height >= game.screen.height - ground.height) {
+            gameOver.play();
+            reset();
+        }
+
+        for (let i = 0; i < game.blocks.length; i++) {
+            let block = game.blocks[i];
+
+            constant = blockTop.height + gap;
+            ctx.drawImage(blockTop, block.x, block.y);
+            ctx.drawImage(blockBottom, block.x, block.y + constant);
+
+            if (game.state == "started") {
+                block.x--;
+            }
+
+            if (
+                (game.player.x + player.width >= block.x &&
+                    game.player.x <= block.x + blockTop.width &&
+                    (game.player.y <= block.y + blockTop.height ||
+                        game.player.y + player.height >= block.y + constant)) ||
+                game.player.y + player.height >= canvas.height - ground.height
+            ) {
+                gameOver.play();
+                reset();
+                resizeWindow();
+            }
+
+            if (block.x == 280) {
+                game.blocks.push({
+                    x: game.screen.width,
+                    y: Math.floor(Math.random() * blockTop.height) - blockTop.height
+                });
+            }
+
+            if (block.x == -5) {
+                game.score++;
+                scoreSound.play();
+            }
+        }
+
+        ctx.drawImage(
+            ground,
+            0,
+            game.screen.height - ground.height,
+            game.screen.width,
+            118
+        );
+        ctx.drawImage(player, game.player.x, game.player.y);
+
+        if (game.state == "started") {
+            game.player.y += game.gravity;
+        }
+    }
+
+    function render() {
+        ctx.drawImage(background, 0, 0);
+
+        draw();
+
+        requestAnimationFrame(render);
+        ctx.font = "24px monospace";
+        ctx.fillStyle = "orange";
+        ctx.fillText("SCORE: " + game.score, 50, 50);
+    }
+
+    function reset() {
+        game = {
+            state: "pause", // "started" "pause" "gameover"
+            blocks: [],
+            screen: {
+                width: 600,
+                height: 600
+            },
+            gravity: 2.5,
+            score: 0,
+            images: {
+                player: baseURL + "/images/head.png",
+                background: baseURL + "/images/background.png",
+                ground: baseURL + "/images/ground.png",
+                blockN: baseURL + "/images/blockN.png",
+                blockS: baseURL + "/images/blockS.png"
+            },
+            sounds: {
+                click: baseURL + "/sounds/fly.mp3",
+                score: baseURL + "/sounds/score.mp3",
+                gameover: baseURL + "/sounds/yandin.m4a"
+            },
+            player: {
+                x: 10,
+                y: 250
+            }
+        };
+
+        canvas.width = game.screen.width;
+        canvas.height = game.screen.height;
+
+        game.blocks[0] = {
+            x: canvas.width / 2,
+            y: 0
+        };
+    }
+
+    resizeWindow();
+    render();
+
+    function captureKey(e) {
+        let key = e.code;
+
+        if ((key == "KeyW") | (key == "ArrowUp") | (key == "Space")) {
+            game.player.y -= 30;
+            clickSound.play();
+            game.state = "started";
+        }
+
+        if (key == "KeyP") {
+            if (game.state == "pause") {
+                game.state = "started";
+            } else {
+                game.state = "pause";
+            }
+        }
+    }
+    function captureTouch(e) {
+        let key = e.type;
+
+        if (key == "touchstart") {
+            game.player.y -= 30;
+            clickSound.play();
+            game.state = "started";
+        }
+    }
+    function resizeWindow() {
+        if (innerWidth <= game.screen.width) {
+            game.screen.width = innerWidth;
+            canvas.width = innerWidth;
+        } else {
+            game.screen.width = 600;
+            canvas.width = 600;
+        }
+    }
+
+    /*
+     * Events
+     */
+    window.addEventListener("keydown", captureKey);
+    window.addEventListener("touchstart", captureTouch);
+    window.addEventListener("resize", resizeWindow);
+
+    /*
+     * Console logger
+     */
+    function log(x) {
+        console.log(x);
+    }
+</script>

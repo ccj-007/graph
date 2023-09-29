@@ -1,0 +1,96 @@
+<canvas id="canvas" width="800" height="400"></canvas>
+
+<script>
+    // 获取Canvas元素
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    // 定义射线的起点和方向
+    const ray = {
+        x: 100, // 射线起点的x坐标
+        y: 200, // 射线起点的y坐标
+        angle: 45, // 射线的角度（以度为单位）
+    };
+    // 定义墙的位置和尺寸
+    const wall = {
+        x1: 600, // 墙的起点x坐标
+        y1: 100, // 墙的起点y坐标
+        x2: 600, // 墙的终点x坐标
+        y2: 300, // 墙的终点y坐标
+    };
+
+    // 检测射线和墙的碰撞
+    function checkCollision() {
+        const angleInRadians = ray.angle * Math.PI / 180;
+        const endX = ray.x + Math.cos(angleInRadians) * 1000; // 射线的长度设置为1000个像素
+        const endY = ray.y + Math.sin(angleInRadians) * 1000;
+
+        // 计算墙的射线
+        const wallVector = {
+            x: wall.x2 - wall.x1,
+            y: wall.y2 - wall.y1,
+        };
+
+        // 计算射线
+        const rayVector = {
+            x: endX - ray.x,
+            y: endY - ray.y,
+        };
+
+        // 判断射线和墙是否相交
+        const t1 = (wallVector.x * (ray.y - wall.y1) + wallVector.y * (wall.x1 - ray.x)) / (rayVector.x * wallVector.y - rayVector.y * wallVector.x);
+        const t2 = (rayVector.x * (wall.y1 - ray.y) + rayVector.y * (ray.x - wall.x1)) / (wallVector.x * rayVector.y - wallVector.y * rayVector.x);
+
+        if (t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 <= 1) {
+            console.log("碰撞发生");
+            return true;
+        }
+        console.log("没有碰撞");
+
+        return false;
+    }
+
+    // 绘制墙
+    function drawWall() {
+        ctx.strokeStyle = 'gray';
+        ctx.beginPath();
+        ctx.moveTo(wall.x1, wall.y1);
+        ctx.lineTo(wall.x2, wall.y2);
+        ctx.stroke();
+    }
+
+    // 绘制射线
+    function drawRay() {
+        ctx.beginPath();
+        ctx.moveTo(ray.x, ray.y);
+        const angleInRadians = ray.angle * Math.PI / 180;
+        // 射线的长度设置为1000个像素
+        const endX = ray.x + Math.cos(angleInRadians) * 1000;
+        const endY = ray.y + Math.sin(angleInRadians) * 1000;
+        // 检测碰撞
+        const collision = checkCollision();
+        // 根据碰撞结果更新射线的颜色
+        if (collision) {
+            ctx.strokeStyle = 'red';
+        } else {
+            ctx.strokeStyle = 'yellow';
+        }
+        ctx.lineTo(endX, endY);
+        ctx.stroke();
+    }
+
+    // 渲染函数
+    function render() {
+        // 清空画布
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // 绘制墙和射线
+        drawWall();
+        drawRay();
+
+        // 更新射线的角度（可以根据交互或动画来更新）
+        ray.angle += 1;
+
+        requestAnimationFrame(render);
+    }
+    render();
+</script>

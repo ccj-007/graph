@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    .circle {
+        width: 300px;
+        height: 300px;
+        background: conic-gradient(#179067, #62e317, #d7f10f, #ffc403, #fcc202, #ff7327, #ff7327, #FF5800, #ff5900, #f64302, #ff0000, #ff0000);
+        border-radius: 50%;
+        position: relative;
+    }
+
+    #progress-circle circle {
+        stroke-dasharray: 880;
+        stroke: #f2f2f2;
+    }
+
+    #progress-circle {
+        transform: rotate(-90deg);
+    }
+
+    .circle-mask {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 2;
+        width: 260px;
+        height: 260px;
+        background: #fff;
+        border-radius: 50%;
+    }
+</style>
+
+<body>
+    <div class="circle">
+        <svg id="progress-circle" width="300" height="300">
+            <circle r="140" cx="150" cy="150" stroke-width="21" fill="transparent" />
+        </svg>
+        <div class="circle-mask"></div>
+    </div>
+</body>
+<script>
+
+
+
+    const circle = document.querySelector('#progress-circle circle');
+    const radius = circle.r.baseVal.value;
+    const circumference = radius * 2 * Math.PI;
+    function setProgress(percent) {
+        const progress = circumference - (percent / 100) * circumference;
+        circle.style.strokeDashoffset = -progress;
+    }
+    let prog = 40
+    let val = 100 - prog
+    setProgress(val); //设置初始进度
+
+</script>
+
+</html>

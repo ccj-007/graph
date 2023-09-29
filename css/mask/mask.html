@@ -1,0 +1,60 @@
+<style>
+    .mask-example {
+        width: 200px;
+        height: 300px;
+        background: url("./earth.jpg");
+        background-size: cover;
+        mask: url(mask.svg) no-repeat;
+        -webkit-mask: url(mask.svg) no-repeat;
+    }
+
+    .mask-example2 {
+        width: 200px;
+        height: 300px;
+        background: url("./earth.jpg");
+        background-size: cover;
+
+        -webkit-mask-image:
+            linear-gradient(45deg, #000000 25%, rgba(0, 0, 0, 0.2) 25%),
+            linear-gradient(-45deg, #000000 25%, rgba(0, 0, 0, 0.2) 25%),
+            linear-gradient(45deg, rgba(0, 0, 0, 0.2) 75%, #000000 75%),
+            linear-gradient(-45deg, rgba(0, 0, 0, 0.2) 75%, #000000 75%);
+        -webkit-mask-size: 20px 20px;
+        -webkit-mask-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    }
+
+    .prog {
+        width: 300px;
+        height: 20px;
+        background-image: repeating-linear-gradient(45deg, rgba(0, 0, 0, .1) 0, rgba(0, 0, 0, .1) 25%, transparent 25%, transparent 50%);
+        background-size: 1.25em 1.25em;
+        animation-name: gradientAnimation;
+        animation-duration: 6s;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear;
+        background-color: rgb(28, 219, 28);
+        border-radius: 10px;
+    }
+
+    @keyframes gradientAnimation {
+        0% {
+            background-position: -100%;
+        }
+
+        100% {
+            background-position: 100%;
+        }
+    }
+</style>
+
+<div style="display: flex">
+    <div class="mask-example"></div>
+    <div class="mask-example2"></div>
+</div>
+
+<img class="earch" src="./earth.jpg" width="200" height="300" alt="">
+<img src="./mask.svg" alt="">
+
+<div class="prog"></div>
+
+<div class="wave"></div>

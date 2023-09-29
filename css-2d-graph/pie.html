@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        .pie-chart {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background-color: #f2f2f2;
+            /* 饼图的背景颜色 */
+            overflow: hidden;
+        }
+
+        .slice {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="pie-chart">
+    </div>
+    <script>
+        // 假设数据为每个扇区的百分比
+        const data = [30, 20, 15, 10, 25];
+
+        const pieChart = document.querySelector('.pie-chart');
+
+        // 计算每个扇区的角度
+        const total = data.reduce((acc, value) => acc + value, 0);
+        let startAngle = 0;
+        for (let i = 0; i < data.length; i++) {
+            const slice = document.createElement('div');
+            slice.classList.add('slice');
+
+            const percentage = data[i].value / total * 100;
+            const endAngle = startAngle + (percentage / 100) * 360;
+
+            slice.style.background = `conic-gradient(${data[i].color} ${startAngle}deg, ${data[i].color} ${endAngle}deg)`;
+
+            pieChart.appendChild(slice);
+
+            startAngle = endAngle;
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,46 @@
+<canvas id="canvas" width="600" height="600"></canvas>
+<script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const gravity = 0.5; // 重力加速度
+    const friction = 0.8; // 摩擦系数
+
+    class Ball {
+        constructor(x, y, radius, color) {
+            this.x = x;
+            this.y = y;
+            this.radius = radius;
+            this.color = color;
+            this.dy = 0; // 垂直速度
+        }
+
+        draw() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = this.color;
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        update() {
+            if (this.y + this.radius + this.dy > canvas.height) {
+                this.dy = -this.dy * friction; // 弹跳后的速度反向，并考虑摩擦
+            } else {
+                this.dy += gravity; // 应用重力加速度
+            }
+
+            this.y += this.dy; // 更新垂直位置
+
+            this.draw(); // 绘制球体
+        }
+    }
+
+    const ball = new Ball(canvas.width / 2, canvas.height / 2, 50, 'red');
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ball.update();
+        requestAnimationFrame(animate);
+    }
+    animate();
+</script>

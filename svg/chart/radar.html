@@ -1,0 +1,280 @@
+<style>
+    body {
+        overflow: hidden;
+        margin: 0;
+        font-size: 14px;
+        font-family: "Helvetica Neue", Helvetica;
+    }
+
+    #chart {
+        position: absolute;
+        top: 50px;
+        left: 100px;
+    }
+</style>
+<script src="https://d3js.org/d3.v3.min.js"></script>
+
+<div id="body">
+    <div id="chart"></div>
+</div>
+
+<script>
+
+    const draw = function (id, d, options) {
+        const cfg = {
+            // 节点半径
+            radius: 4,
+            // 图表尺寸
+            w: 400,
+            h: 400,
+            // 缩放系数
+            factor: 1,
+            // 文字离圆心的间距
+            factorLegend: .85,
+            levels: 10,
+            maxValue: 1,
+            // 周长
+            radians: 2 * Math.PI,
+            opacityArea: 0.3,
+            // 数值标注间距
+            ToRight: 5,
+            // 雷达图偏移
+            TranslateX: 80,
+            TranslateY: 30,
+            // 画布额外尺寸
+            ExtraWidthX: 150,
+            ExtraWidthY: 100,
+            // 颜色数值集合
+            color: d3.scale.ordinal().range(['#3B1123', '#D04884']),
+            // 网格线颜色
+            gridLineColor: '#B5306A',
+            // 分割线颜色
+            dividerColor: '#B5306A',
+        };
+
+        // 合并配置
+        for (let i in options) {
+            if ('undefined' !== typeof options[i]) {
+                cfg[i] = options[i];
+            }
+        }
+
+        // 计算最大值
+        cfg.maxValue = Math.max(cfg.maxValue, d3.max(d, function (i) { return d3.max(i.map(function (o) { return o.value; })) }));
+        // 维度数组
+        let allAxis = (d[0].map(function (i, j) { return i.axis }));
+        // 维度的个数
+        let total = allAxis.length;
+        // 雷达图的半径
+        let radius = cfg.factor * Math.min(cfg.w / 2, cfg.h / 2);
+        // 格式化%
+        let Format = d3.format('%');
+        d3.select(id).select("svg").remove();
+
+        let g = d3.select(id)
+            .append("svg")
+            .attr("width", cfg.w + cfg.ExtraWidthX)
+            .attr("height", cfg.h + cfg.ExtraWidthY)
+            .append("g")
+            .attr("transform", "translate(" + cfg.TranslateX + "," + cfg.TranslateY + ")");
+        ;
+
+
+        // 生成网格
+        for (let j = 0; j < cfg.levels - 1; j++) {
+            let levelFactor = cfg.factor * radius * ((j + 1) / cfg.levels);
+            g.selectAll(".levels")
+                .data(allAxis)
+                .enter()
+                .append("svg:line")
+                .attr("x1", function (d, i) { return levelFactor * (1 - cfg.factor * Math.sin(i * cfg.radians / total)); })
+                .attr("y1", function (d, i) { return levelFactor * (1 - cfg.factor * Math.cos(i * cfg.radians / total)); })
+                .attr("x2", function (d, i) { return levelFactor * (1 - cfg.factor * Math.sin((i + 1) * cfg.radians / total)); })
+                .attr("y2", function (d, i) { return levelFactor * (1 - cfg.factor * Math.cos((i + 1) * cfg.radians / total)); })
+                .attr("class", "line")
+                .style("stroke", cfg.gridLineColor)
+                .style("stroke-opacity", "0.75") // opacity of grey chart guide
+                .style("stroke-width", "0.3px")
+                .attr("transform", "translate(" + (cfg.w / 2 - levelFactor) + ", " + (cfg.h / 2 - levelFactor) + ")");
+        }
+
+        // 辅助线
+        for (let j = 0; j < cfg.levels; j++) {
+            let levelFactor = cfg.factor * radius * ((j + 1) / cfg.levels);
+            g.selectAll(".levels")
+                .data([1])
+                .enter()
+                .append("svg:text")
+                .attr("x", function (d) { return levelFactor * (1 - cfg.factor * Math.sin(0)); })
+                .attr("y", function (d) { return levelFactor * (1 - cfg.factor * Math.cos(0)); })
+                .attr("class", "legend")
+                .style("font-family", "sans-serif")
+                .style("font-size", "10px")
+                .attr("transform", "translate(" + (cfg.w / 2 - levelFactor + cfg.ToRight) + ", " + (cfg.h / 2 - levelFactor) + ")")
+                .attr("fill", "#737373")
+                .text(Format((j + 1) * cfg.maxValue / cfg.levels));
+        }
+
+        let axis = g.selectAll(".axis")
+            .data(allAxis)
+            .enter()
+            .append("g")
+            .attr("class", "axis");
+
+        axis.append("line")
+            .attr("x1", cfg.w / 2)
+            .attr("y1", cfg.h / 2)
+            .attr("x2", function (d, i) { return cfg.w / 2 * (1 - cfg.factor * Math.sin(i * cfg.radians / total)); })
+            .attr("y2", function (d, i) { return cfg.h / 2 * (1 - cfg.factor * Math.cos(i * cfg.radians / total)); })
+            .attr("class", "line")
+            .style("stroke", cfg.dividerColor)
+            .style("stroke-width", "1px");
+
+        axis.append("text")
+            .attr("class", "legend")
+            .text(function (d) { return d })
+            .style("font-family", "sans-serif")
+            .style("font-size", "11px")
+            .attr("text-anchor", "middle")
+            .attr("dy", "1.5em")
+            .attr("transform", function (d, i) { return "translate(0, -10)" })
+            .attr("x", function (d, i) { return cfg.w / 2 * (1 - cfg.factorLegend * Math.sin(i * cfg.radians / total)) - 60 * Math.sin(i * cfg.radians / total); })
+            .attr("y", function (d, i) { return cfg.h / 2 * (1 - Math.cos(i * cfg.radians / total)) - 20 * Math.cos(i * cfg.radians / total); });
+        let series = 0;
+
+        // 生成多边形
+        d.forEach(function (y, x) {
+            let dataValues = [];
+            y.forEach(function (j, i) {
+                let value = Math.max(j.value, 0);
+                let angle = i * cfg.radians / total;
+                let xCoord = cfg.w / 2 * (1 - (parseFloat(value) / cfg.maxValue) * cfg.factor * Math.sin(angle));
+                let yCoord = cfg.h / 2 * (1 - (parseFloat(value) / cfg.maxValue) * cfg.factor * Math.cos(angle));
+                dataValues.push([xCoord, yCoord]);
+            });
+            dataValues.push(dataValues[0]);
+
+            g.append("polygon")
+                .data([dataValues])
+                .attr("class", "radar-chart-serie" + x)
+                .style("stroke-width", "2px")
+                .style("stroke", cfg.color(x))
+                .style("fill", cfg.color(x))
+                .style("fill-opacity", cfg.opacityArea)
+                .attr("points", function (d) {
+                    return d.map(function (point) {
+                        return point[0] + "," + point[1];
+                    }).join(" ");
+                })
+                .on('mouseover', function () {
+                    g.selectAll("polygon")
+                        .transition(200)
+                        .style("fill-opacity", 0.1);
+                    d3.select(this)
+                        .transition(200)
+                        .style("fill-opacity", 0.7);
+                })
+                .on('mouseout', function () {
+                    g.selectAll("polygon")
+                        .transition(200)
+                        .style("fill-opacity", cfg.opacityArea);
+                });
+
+            series++;
+        });
+
+        series = 0;
+
+        // 生成节点
+        d.forEach(function (y) {
+            g.selectAll(".nodes")
+                .data(y)
+                .enter()
+                .append("circle")
+                .attr("class", "radar-chart-serie" + series)
+                .attr('r', cfg.radius)
+                .attr("alt", function (j) { return Math.max(j.value, 0) })
+                .attr("cx", function (j, i) {
+                    return cfg.w / 2 * (1 - (Math.max(j.value, 0) / cfg.maxValue) * cfg.factor * Math.sin(i * cfg.radians / total));
+                })
+                .attr("cy", function (j, i) {
+                    return cfg.h / 2 * (1 - (Math.max(j.value, 0) / cfg.maxValue) * cfg.factor * Math.cos(i * cfg.radians / total));
+                })
+                .attr("data-id", function (j) { return j.axis })
+                .style("fill", cfg.color(series))
+                .style("fill-opacity", .9)
+                .on('mouseover', function () {
+                    g.selectAll("polygon")
+                        .transition(200)
+                        .style("fill-opacity", 0.1);
+                    d3.select(this)
+                        .transition(200)
+                        .style("fill-opacity", 0.7);
+                })
+                .on('mouseout', function () {
+                    g.selectAll("polygon")
+                        .transition(200)
+                        .style("fill-opacity", cfg.opacityArea);
+                })
+                .append("title")
+                .text(function (j) { return Math.max(j.value, 0) });
+
+            series++;
+        });
+
+        // legend
+        const LegendOptions = ['Smartphone', 'Tablet'];
+        const svg = d3.select('#body')
+            .selectAll('svg')
+            .append('svg')
+            .attr("width", cfg.w + 100)
+            .attr("height", cfg.h)
+
+        const legend = svg.append("g")
+            .attr("class", "legend")
+            .attr("height", 100)
+            .attr("width", 200)
+            .attr('transform', 'translate(90,20)')
+            ;
+        legend.selectAll('rect')
+            .data(LegendOptions)
+            .enter()
+            .append("rect")
+            .attr("x", cfg.w - 65)
+            .attr("y", function (d, i) { return i * 20; })
+            .attr("width", 10)
+            .attr("height", 10)
+            .style("fill", function (d, i) { return ['#3B1123', '#D04884'][i]; })
+            ;
+        legend.selectAll('text')
+            .data(LegendOptions)
+            .enter()
+            .append("text")
+            .attr("x", cfg.w - 52)
+            .attr("y", function (d, i) { return i * 20 + 9; })
+            .attr("font-size", "11px")
+            .attr("fill", "#737373")
+            .text(function (d) { return d; })
+    }
+
+    const d = [
+        [
+            { axis: "Email", value: 1 },
+            { axis: "Social Networks", value: 0.86 },
+            { axis: "Internet Banking", value: 0.62 },
+            { axis: "News Sportsites", value: 0.54 },
+            { axis: "Search Engine", value: 0.88 },
+            { axis: "View Shopping sites", value: 0.14 },
+        ], [
+            { axis: "Email", value: 0.78 },
+            { axis: "Social Networks", value: 0.68 },
+            { axis: "Internet Banking", value: 0.47 },
+            { axis: "News Sportsites", value: 0.45 },
+            { axis: "Search Engine", value: 0.46 },
+            { axis: "View Shopping sites", value: 0.69 },
+            { axis: "Paying Online", value: 0 },
+        ]
+    ];
+
+    draw("#chart", d);
+</script>

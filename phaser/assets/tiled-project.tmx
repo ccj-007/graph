@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="70" tileheight="70" infinite="0" nextlayerid="11" nextobjectid="91">
+ <editorsettings>
+  <export target="data.json" format="json"/>
+ </editorsettings>
+ <tileset firstgid="1" name="tiles_spritesheet" tilewidth="70" tileheight="70" spacing="2" margin="2" tilecount="156" columns="12">
+  <image source="tiles_spritesheet.png" width="914" height="936"/>
+ </tileset>
+ <tileset firstgid="157" name="items_spritesheet" tilewidth="70" tileheight="70" spacing="2" margin="2" tilecount="64" columns="8">
+  <image source="items_spritesheet.png" width="576" height="576"/>
+  <wangsets>
+   <wangset name="未命名集" type="corner" tile="-1">
+    <wangcolor name="" color="#ff0000" tile="-1" probability="1"/>
+   </wangset>
+  </wangsets>
+ </tileset>
+ <layer id="1" name="wall" width="30" height="20">
+  <data encoding="csv">
+92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,
+92,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,92,
+92,0,0,0,0,0,92,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,92,
+92,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,92,0,0,0,92,0,0,0,92,
+92,0,0,92,92,0,0,0,0,0,0,92,0,0,92,92,0,0,92,0,0,0,0,0,0,0,0,0,0,92,
+92,0,0,0,0,0,0,92,92,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,92,0,0,92,
+92,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,92,92,0,0,92,0,0,0,0,92,
+92,92,92,0,0,0,0,0,0,0,0,92,92,92,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,92,
+92,92,92,92,92,0,0,0,0,0,0,0,0,0,0,0,92,92,92,0,0,0,0,92,0,0,0,0,0,92,
+92,92,92,92,92,92,92,92,92,0,0,0,0,0,0,0,0,0,92,0,0,0,0,0,0,0,92,92,0,92,
+92,92,92,92,92,92,92,92,92,0,0,0,0,0,0,0,0,0,0,0,92,92,92,0,0,0,92,92,0,92,
+92,92,92,0,0,0,0,0,0,0,0,0,92,92,92,92,92,92,0,0,0,0,0,0,0,0,0,0,0,92,
+92,0,0,0,0,0,0,0,0,0,0,0,92,92,92,92,92,92,0,0,0,0,92,92,92,0,0,0,0,92,
+92,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,92,
+92,92,92,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,92,92,92,0,0,92,
+92,92,0,0,0,0,0,92,92,92,92,92,92,0,0,92,92,92,92,92,92,0,0,0,92,92,92,0,92,92,
+92,92,0,0,0,0,92,92,92,92,92,92,92,0,0,0,0,0,0,0,0,0,0,0,92,92,0,0,92,92,
+92,92,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,92,92,
+92,92,92,92,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,92,92,92,92,
+92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92,92
+</data>
+ </layer>
+ <objectgroup id="10" name="obj">
+  <object id="63" gid="201" x="1363" y="995" width="70" height="70"/>
+  <object id="64" gid="201" x="601" y="991" width="70" height="70"/>
+  <object id="65" gid="201" x="345" y="975" width="70" height="70"/>
+  <object id="66" gid="201" x="1083" y="1281" width="70" height="70"/>
+  <object id="67" gid="201" x="1533" y="1287" width="70" height="70"/>
+  <object id="68" gid="201" x="1101" y="451" width="70" height="70"/>
+  <object id="69" gid="201" x="1053" y="167" width="70" height="70"/>
+  <object id="70" gid="201" x="419" y="297" width="70" height="70"/>
+  <object id="71" gid="201" x="209" y="197" width="70" height="70"/>
+  <object id="72" gid="201" x="1461" y="205" width="70" height="70"/>
+  <object id="73" gid="201" x="1613" y="339" width="70" height="70"/>
+  <object id="74" gid="193" x="1861" y="1215" width="70" height="70"/>
+  <object id="75" gid="193" x="1857" y="963" width="70" height="70"/>
+  <object id="76" gid="193" x="997" y="1039" width="70" height="70"/>
+  <object id="77" gid="193" x="681" y="783" width="70" height="70"/>
+  <object id="78" gid="191" x="1857" y="577" width="70" height="70"/>
+  <object id="79" gid="191" x="1689" y="817" width="70" height="70"/>
+  <object id="80" gid="199" x="827" y="689" width="70" height="70"/>
+  <object id="81" gid="199" x="387" y="517" width="70" height="70"/>
+  <object id="82" gid="183" x="477" y="1319" width="70" height="70"/>
+  <object id="83" gid="183" x="619" y="181" width="70" height="70"/>
+  <object id="88" gid="186" x="1743" y="1295" width="70" height="70"/>
+  <object id="90" gid="186" x="-49" y="-55" width="70" height="70"/>
+ </objectgroup>
+</map>

@@ -1,0 +1,109 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "E:/visuals/phaser3-game/public/assets/game.tmx",
+    "expandedProjectPaths": [
+    ],
+    "file.lastUsedOpenFilter": "全部文件 (*)",
+    "fileStates": {
+        "": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "E:/visuals/phaser3-game/dist/assets/game.tmx": {
+            "scale": 0.33,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1646.9696969696968,
+                "y": 454.5454545454545
+            }
+        },
+        "E:/visuals/phaser3-game/dist/assets/game.tmx#iceworld": {
+            "scaleInDock": 1
+        },
+        "E:/visuals/phaser3-game/dist/assets/game.tmx#tiles_spritesheet": {
+            "scaleInDock": 1
+        },
+        "E:/visuals/phaser3-game/public/assets/game.tmx": {
+            "scale": 0.75,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 2217.333333333333,
+                "y": 527.3333333333333
+            }
+        },
+        "E:/visuals/phaser3-game/public/assets/game.tmx#iceworld": {
+            "scaleInDock": 1
+        },
+        "E:/visuals/phaser3-game/public/assets/game.tmx#tiles_spritesheet": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "E:/visuals/phaser3-typescript-project-template/dist/assets/tiled-project.tmx": {
+            "scale": 0.5659285714285714,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 425.8487946484918,
+                "y": 347.21696327148805
+            }
+        },
+        "E:/visuals/phaser3-typescript-project-template/dist/assets/tiled-project.tmx#items_spritesheet": {
+            "scaleInDock": 1
+        },
+        "E:/visuals/phaser3-typescript-project-template/dist/assets/tiled-project.tmx#tiles_spritesheet": {
+            "scaleInDock": 1
+        },
+        "E:/visuals/sidescrolling-platformer-template-phaser3/dist/assets/game.tmx": {
+            "scale": 0.5,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 469,
+                "y": 658
+            }
+        },
+        "E:/visuals/sidescrolling-platformer-template-phaser3/dist/assets/game.tmx#iceworld": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tiled-project.tmx": {
+            "scale": 0.5,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 1051,
+                "y": 702
+            }
+        },
+        "tiled-project.tmx#items_spritesheet": {
+            "scaleInDock": 1
+        },
+        "tiled-project.tmx#tiles_spritesheet": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        }
+    },
+    "last.exportedFilePath": "E:/visuals/phaser3-game/public/assets",
+    "last.imagePath": "E:/visuals/phaser3-game/public/assets",
+    "map.lastUsedExportFilter": "JSON map files (*.tmj *.json)",
+    "openFiles": [
+        "E:/visuals/phaser3-game/public/assets/game.tmx"
+    ],
+    "project": "tiled-project.tiled-project",
+    "property.type": "bool",
+    "recentFiles": [
+        "E:/visuals/phaser3-game/public/assets/game.tmx",
+        "E:/visuals/phaser3-game/dist/assets/game.tmx",
+        "E:/visuals/sidescrolling-platformer-template-phaser3/dist/assets/game.tmx",
+        "E:/visuals/phaser3-typescript-project-template/dist/assets/tiled-project.tmx",
+        "tiled-project.tmx"
+    ],
+    "tileset.embedInMap": true,
+    "tileset.margin": 2,
+    "tileset.spacing": 2,
+    "tileset.tileSize": {
+        "height": 70,
+        "width": 70
+    }
+}

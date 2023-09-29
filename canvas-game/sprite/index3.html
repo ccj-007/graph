@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        document.body.appendChild(canvas);
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const startX = 100; // 起始点 x 坐标
+        const startY = canvas.height / 2; // 起始点 y 坐标
+        const g = 0.1; // 重力加速度
+        const velocity = 5; // 初始速度
+        let x = startX;
+        let y = startY;
+        let t = 0;
+
+        function drawBall() {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            context.beginPath();
+            context.arc(x, y, 10, 0, Math.PI * 2);
+            context.fillStyle = 'red';
+            context.fill();
+            context.closePath();
+        }
+
+        function updatePosition() {
+            x = startX + velocity * t;
+            y = startY + 0.5 * g * t * t;
+
+            t += 1;
+
+            if (y >= canvas.height) {
+                t = 0;
+                y = startY;
+            }
+        }
+
+        function animate() {
+            drawBall();
+            updatePosition();
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+
+</html>

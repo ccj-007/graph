@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            background: #000;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        class Sprite {
+            constructor(imagePath, frameWidth, frameHeight, frameRate) {
+                // 创建Canvas元素
+                this.canvas = document.createElement('canvas');
+                this.ctx = this.canvas.getContext('2d');
+                document.body.appendChild(this.canvas);
+
+                // 加载精灵图
+                this.spriteImage = new Image();
+                this.spriteImage.src = imagePath;
+                this.frameWidth = frameWidth;
+                this.frameHeight = frameHeight;
+                this.frameRate = frameRate;
+
+                this.frameX = 0;
+                this.frameY = 0;
+                this.currentFrame = 0;
+
+                // 在精灵图加载完成后开始游戏循环
+                this.spriteImage.onload = () => {
+                    this.canvas.width = this.frameWidth;
+                    this.canvas.height = this.frameHeight;
+                    this.gameLoop();
+                };
+            }
+
+            // 绘制精灵图的函数
+            drawSprite() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                this.ctx.drawImage(
+                    this.spriteImage,
+                    this.frameX * this.frameWidth,
+                    this.frameY * this.frameHeight,
+                    this.frameWidth,
+                    this.frameHeight,
+                    0,
+                    0,
+                    this.frameWidth,
+                    this.frameHeight
+                );
+            }
+
+            // 更新帧的函数
+            updateFrame() {
+                this.currentFrame++;
+                if (this.currentFrame >= this.frameRate) {
+                    this.currentFrame = 0;
+                    this.frameX++;
+                    if (this.frameX >= Math.floor(this.spriteImage.width / this.frameWidth)) {
+                        this.frameX = 0;
+                        this.frameY++;
+                        if (this.frameY >= this.spriteImage.height / this.frameHeight) {
+                            this.frameY = 0;
+                        }
+                    }
+                }
+            }
+
+            // 游戏循环，每帧更新和绘制精灵图
+            gameLoop() {
+                this.updateFrame();
+                this.drawSprite();
+                requestAnimationFrame(() => this.gameLoop());
+            }
+        }
+
+        // 创建Sprite实例并传入相关参数
+        const sprite = new Sprite('./img/NewerCampFire_2.png', 64, 64, 10);
+    </script>
+</body>
+
+</html>

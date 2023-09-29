@@ -1,0 +1,41 @@
+<style>
+    #myCircle {
+        transform: scale(1.4);
+    }
+</style>
+
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800">
+    <defs>
+        <!-- 定义一个圆形 -->
+        <g id="myCircle">
+            <circle cx="100" cy="100" r="50" stroke="black" stroke-width="10" />
+            <!-- 绘制眼睛 -->
+            <circle cx="80" cy="85" r="7" fill="black" />
+            <circle cx="120" cy="85" r="7" fill="black" />
+
+            <!-- 绘制嘴巴 -->
+            <path d="M80 120 Q100 140 120 120" fill="none" stroke="black" stroke-width="8" stroke-linecap="round" />
+        </g>
+
+    </defs>
+    <defs>
+        <linearGradient id="gradient">
+            <stop offset="0%" style="stop-color: rgb(255, 93, 12)" />
+            <stop offset="100%" style="stop-color: #ff0000" />
+        </linearGradient>
+    </defs>
+    <!-- 使用定义的圆形 -->
+    <use xlink:href="#myCircle" fill="url(#gradient)" />
+    <use xlink:href="#myCircle" x="200" fill="yellow" />
+    <use xlink:href="#myCircle" y="200" fill="yellow" />
+    <use xlink:href="#myCircle" x="200" y="200" fill="yellow" />
+</svg>
+
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200">
+    <symbol id="myShape" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="40" fill="red" />
+    </symbol>
+
+    <use xlink:href="#myShape" x="50" y="50" />
+    <use xlink:href="#myShape" x="150" y="50" />
+</svg>

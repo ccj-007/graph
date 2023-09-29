@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+    .chart {
+        width: 300px;
+        height: 300px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        background-color: #f0f0f0;
+        padding: 10px;
+        position: relative;
+    }
+
+    .bar {
+        width: 30px;
+        background-color: #3498db;
+        transition: height 0.5s ease-in-out;
+        position: relative;
+    }
+
+    .bar::after {
+        content: attr(data-value);
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 12px;
+        color: #333;
+    }
+</style>
+
+<head>
+
+</head>
+
+<body>
+    <div class="chart">
+        <div class="bar" style="height: 80%" data-value="80"></div>
+        <div class="bar" style="height: 60%" data-value="60"></div>
+        <div class="bar" style="height: 40%" data-value="40"></div>
+        <div class="bar" style="height: 20%" data-value="20"></div>
+    </div>
+</body>
+
+</html>

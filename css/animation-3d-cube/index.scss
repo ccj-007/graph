@@ -1,0 +1,117 @@
+$c: #222 #401a2a #741a38 #9b123c #c10a40;
+//  定义了立方体的边长
+$l: 2em;
+// 定义了动画的过渡时间
+$t: 0.5s;
+// 计算了颜色列表的长度
+$n: length($c);
+// 计算了一个中间值
+$m: 0.5 * ($n - 1);
+//  计算了一个距离值
+$d: 5.6 * $l;
+//   定义了一个比例值
+$k: 0.75;
+
+html {
+  overflow: hidden;
+}
+
+body {
+  background: #444;
+}
+
+div,
+:before,
+:after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-style: preserve-3d;
+  background: currentColor;
+}
+
+.assembly {
+  transform: rotateX(-35deg) rotateY(-45deg);
+}
+
+// 定义不动cube的位置和颜色，移动cube的延迟动画
+@for $i from 0 to $n {
+  $j: $i + 1;
+
+  .assembly > :nth-child(#{$n}n + #{$j}) {
+    top: calc(50% + #{($m - $i) * 2.5 * $l});
+    color: nth($c, $j);
+  }
+
+  .switch--out:nth-child(#{$n}n + #{$j}) {
+    &,
+    * {
+      animation-delay: -$i * $t/$n;
+    }
+  }
+}
+
+// 设置开关动画
+[class*="switch"] {
+  animation: switch 4 * $t steps(4) infinite;
+}
+
+.switch--out {
+  // 动画将以相反的顺序播放
+  animation-direction: reverse;
+  // steps(4, start)  表示动画将以步进的方式进行，分为4个阶段，每个阶段的持续时间相等。过渡效果是突变的，没有平滑的过渡效果。
+  animation-timing-function: steps(4, start);
+}
+
+@keyframes switch {
+  to {
+    transform: rotateY(1turn); // 在最后一帧的时候将做360旋转
+  }
+}
+
+// 设置移除动画
+.mover {
+  animation: move $t ease-in-out infinite;
+}
+
+@keyframes move {
+  #{$k*100%} {
+    transform: translate($k * $d) scale3d(1, 1, 1);
+  }
+  100% {
+    transform: translate($d) scale3d(0, 0, 0);
+  }
+}
+
+.cube {
+  // 定义初始位置
+  margin: -0.5 * $l;
+  width: $l;
+  height: $l;
+  transform: translateZ(0.5 * $l);
+
+  &:before,
+  &:after {
+    // 继承父类的宽高
+    width: inherit;
+    height: inherit;
+    content: "";
+  }
+
+  // 生成伪元素同时应用filter修改每个面的颜色
+  &:before {
+    top: 0;
+    left: 100%;
+    transform-origin: 0 50%;
+    transform: rotateY(90deg);
+    filter: brightness(1.15);
+  }
+
+  &:after {
+    top: -100%;
+    left: 0;
+    transform-origin: 50% bottom;
+    transform: rotateX(90deg);
+    filter: brightness(1.3);
+  }
+}
