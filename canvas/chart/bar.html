@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    * {
+        box-sizing: border-box;
+        padding: 0;
+        margin: 0;
+    }
+
+    body {
+        margin: 50px auto;
+        font-size: 1em;
+        text-align: center;
+    }
+
+    ul {
+        font-size: 12px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 20px;
+        gap: 1rem;
+    }
+
+    li {
+        margin: 0.5rem 0;
+    }
+
+    legend {
+        margin: 0 auto;
+    }
+
+    #myCanvasWarp {
+        width: 500px;
+    }
+</style>
+
+<body>
+    <div id="myCanvasWarp">
+        <legend for="myCanvas"></legend>
+        <canvas id="myCanvas"></canvas>
+    </div>
+    <script>
+        const myCanvas = document.getElementById("myCanvas");
+        myCanvas.width = 500;
+        myCanvas.height = 500;
+        const ctx = myCanvas.getContext("2d");
+
+        // 绘制线段
+        function drawLine(ctx, startX, startY, endX, endY, color) {
+            // 存储状态
+            ctx.save();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 0.2
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(endX, endY);
+            ctx.stroke();
+            // 回退到刚绘制的状态，防止样式等影响其他绘图
+            ctx.restore();
+        }
+        // 绘制矩形
+        function drawBar(
+            ctx,
+            upperLeftCornerX,
+            upperLeftCornerY,
+            width,
+            height,
+            color
+        ) {
+            ctx.save();
+            ctx.fillStyle = color;
+            ctx.fillRect(upperLeftCornerX, upperLeftCornerY, width, height);
+            ctx.restore();
+        }
+        class BarChart {
+            constructor(options) {
+                // 配置对象
+                this.options = options;
+                // 通用访问的属性
+                this.canvas = options.canvas;
+                this.ctx = this.canvas.getContext("2d");
+                this.colors = options.colors;
+                this.titleOptions = options.titleOptions;
+                this.maxValue = Math.max(...Object.values(this.options.data));
+                // 得到实际的图表尺寸
+                this.canvasActualHeight = this.canvas.height - this.options.padding * 2;
+                this.canvasActualWidth = this.canvas.width - this.options.padding * 2;
+            }
+            drawGridLines() {
+                let gridValue = 0;
+                while (gridValue <= this.maxValue) {
+                    // 限制范围计算实际的 Y 坐标
+                    const gridY =
+                        this.canvasActualHeight * (1 - gridValue / this.maxValue) +
+                        this.options.padding;
+                    drawLine(
+                        this.ctx,
+                        0,
+                        gridY,
+                        this.canvas.width,
+                        gridY,
+                        this.options.gridColor
+                    );
+
+                    // 绘制Y轴文本
+                    this.ctx.save();
+                    this.ctx.fillStyle = this.options.gridColor;
+                    this.ctx.textBaseline = "bottom";
+                    this.ctx.font = "bold 10px Arial";
+                    this.ctx.fillText(gridValue, 0, gridY - 2);
+                    this.ctx.restore();
+                    gridValue += this.options.gridStep;
+                }
+            }
+            drawBars() {
+                // 用于计算 x 坐标
+                let barIndex = 0;
+                // 总数
+                const numberOfBars = Object.keys(this.options.data).length;
+                // bar 尺寸
+                const barSize = this.canvasActualWidth / numberOfBars;
+                const values = Object.values(this.options.data);
+                for (const val of values) {
+                    // 计算高度百分比
+                    const barHeight = Math.round((this.canvasActualHeight * val) / this.maxValue);
+                    // 绘制
+                    drawBar(
+                        this.ctx,
+                        this.options.padding + barIndex * barSize,
+                        this.canvas.height - barHeight - this.options.padding,
+                        barSize,
+                        barHeight,
+                        this.colors[barIndex % this.colors.length]
+                    );
+                    barIndex++;
+                }
+            }
+            drawLabel() {
+                this.ctx.save();
+                this.ctx.textBaseline = "bottom";
+                this.ctx.textAlign = this.titleOptions.align;
+                this.ctx.fillStyle = this.titleOptions.fill;
+                this.ctx.font = `${this.titleOptions.font.weight} ${this.titleOptions.font.size} ${this.titleOptions.font.family}`;
+                let xPos = this.canvas.width / 2;
+                if (this.titleOptions.align == "left") {
+                    xPos = 10;
+                }
+                if (this.titleOptions.align == "right") {
+                    xPos = this.canvas.width - 10;
+                }
+                this.ctx.fillText(this.options.seriesName, xPos, this.canvas.height);
+                this.ctx.restore();
+            }
+            drawLegend() {
+                let pIndex = 0;
+                let legend = document.querySelector("legend[for='myCanvas']");
+                let ul = document.createElement("ul");
+                legend.append(ul);
+                for (let ctg of Object.keys(this.options.data)) {
+                    let li = document.createElement("li");
+                    li.style.listStyle = "none";
+                    li.style.borderLeft =
+                        "20px solid " + this.colors[pIndex % this.colors.length];
+                    li.style.padding = "5px";
+                    li.textContent = ctg;
+                    ul.append(li);
+                    pIndex++;
+                }
+            }
+            draw() {
+                // 绘制网格线
+                this.drawGridLines();
+                // 绘制柱子
+                this.drawBars();
+                // 绘制 label
+                this.drawLabel();
+                // 绘制图例
+                this.drawLegend();
+            }
+        }
+        const myBarchart = new BarChart({
+            canvas: myCanvas,
+            seriesName: "fruit shop",
+            padding: 30,
+            gridStep: 5,
+            gridColor: "black",
+            data: {
+                "Banana": 16,
+                "Apple": 12,
+                "Orange": 20,
+                "Strawberry": 3,
+            },
+            colors: ["#a55ca5", "#67b6c7", "#bccd7a", "#eb9743"],
+            titleOptions: {
+                align: "center",
+                fill: "black",
+                font: {
+                    weight: "bold",
+                    size: "18px",
+                    family: "Lato"
+                }
+            }
+        });
+        myBarchart.draw();
+    </script>
+</body>
+
+</html>
