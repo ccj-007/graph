@@ -233,8 +233,7 @@ svg
       // 更新浮层位置
       labelOverlay.attr(
         "transform",
-        `translate(${mouseX > width - 150 ? width - 150 : mouseX + 10}, ${
-          mouseY > height - 180 ? height - 180 : mouseY + 10
+        `translate(${mouseX > width - 150 ? width - 150 : mouseX + 10}, ${mouseY > height - 180 ? height - 180 : mouseY + 10
         })`
       );
       d3.select(".label-rect").style("display", "block");

@@ -41,27 +41,17 @@
     <canvas id="myCanvas"></canvas>
     <div for="myCanvas"></div>
     <script>
-        var myCanvas = document.getElementById("myCanvas");
+        const myCanvas = document.getElementById("myCanvas");
+        const ctx = myCanvas.getContext("2d");
         myCanvas.width = 500;
         myCanvas.height = 340;
 
-        var ctx = myCanvas.getContext("2d");
 
         function drawLine(ctx, startX, startY, endX, endY, color) {
             ctx.save();
-            ctx.strokeStyle = color;
             ctx.beginPath();
             ctx.moveTo(startX, startY);
             ctx.lineTo(endX, endY);
-            ctx.stroke();
-            ctx.restore();
-        }
-
-        function drawArc(ctx, centerX, centerY, radius, startAngle, endAngle, color) {
-            ctx.save();
-            ctx.strokeStyle = color;
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, radius, startAngle, endAngle);
             ctx.stroke();
             ctx.restore();
         }
@@ -74,18 +64,50 @@
             startAngle,
             endAngle,
             fillColor,
-            strokeColor
+            shadow
         ) {
             ctx.save();
             ctx.fillStyle = fillColor;
-            ctx.strokeStyle = strokeColor;
             ctx.beginPath();
             ctx.moveTo(centerX, centerY);
             ctx.arc(centerX, centerY, radius, startAngle, endAngle);
             ctx.closePath();
+            if (shadow) {
+                ctx.shadowBlur = 20;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
+                ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+            }
             ctx.fill();
-            ctx.stroke();
             ctx.restore();
+        }
+
+        function drawText(ctx, text, x, y, font, color) {
+            ctx.font = font;
+            ctx.fillStyle = color;
+            ctx.fillText(text, x, y);
+        }
+
+        function drawPolyline(ctx, points, color, lineWidth) {
+            ctx.strokeStyle = color
+            ctx.lineWidth = lineWidth;
+            ctx.beginPath();
+            ctx.moveTo(points[0].x, points[0].y);
+
+            for (let i = 1; i < points.length; i++) {
+                ctx.lineTo(points[i].x, points[i].y);
+            }
+            ctx.stroke();
+        }
+
+        function checkCollision(x, y, circleX, circleY, radius) {
+            const distance = Math.sqrt(Math.pow(circleX - x, 2) + Math.pow(circleY - y, 2));
+            if (distance <= radius) {
+                // 发生碰撞
+                return true;
+            }
+            // 未发生碰撞
+            return false;
         }
 
         class PieChart {
@@ -97,144 +119,152 @@
                 this.titleOptions = options.titleOptions;
                 this.totalValue = [...Object.values(this.options.data)].reduce((a, b) => a + b, 0);
                 this.radius = Math.min(this.canvas.width / 2, this.canvas.height / 2) - options.padding;
+                this.v = 0.5
+                this.r = this.radius
+                this.t = 1
+                this.hoverId = -1
+                this.deg = 0
+                this.init()
+
             }
 
-            drawSlices() {
-                var colorIndex = 0;
-                var startAngle = -Math.PI / 2;
+            init() {
+                // 初始化监听hover
+                this.canvas.addEventListener('mousemove', this.onMouseMove.bind(this))
+            }
 
-                for (var categ in this.options.data) {
-                    var val = this.options.data[categ];
-                    var sliceAngle = (2 * Math.PI * val) / this.totalValue;
+            onMouseMove(e) {
+                const { clientX, clientY } = e
+                const cx = clientX - this.canvas.offsetLeft
+                const cy = clientY - this.canvas.offsetTop
+
+                const centerX = myCanvas.width / 2;
+                const centerY = myCanvas.height / 2;
+                // 计算鼠标样式
+                this.isHover = checkCollision(cx, cy, centerX, centerY, this.radius)
+                document.body.style.cursor = this.isHover ? 'pointer' : 'default'
+
+                // 计算弧度
+                const angle = Math.atan2(cy - centerY, cx - centerX);
+
+                // 计算角度
+                let deg = (angle * 180) / Math.PI + 90;
+                if (deg < 0) {
+                    deg += 360;
+                }
+
+                // 计算角度得到 hoverId
+                let index = 0;
+                let oldAngle = 0
+                for (let k in this.options.data) {
+                    let val = this.options.data[k];
+                    let newAngle = oldAngle + (val / 100) * 360; //每块的角度
+                    if (oldAngle < deg && deg < newAngle) {
+                        if (this.hoverId !== index) {
+                            this.r = this.radius
+                        }
+                        this.hoverId = index
+                    }
+                    oldAngle = newAngle
+                    index++;
+                }
+                this.deg = deg
+            }
+            setV() {
+                this.t = Math.max(this.t - 0.06, 2)
+                const v = this.v * this.t
+                if (this.isHover) {
+                    this.r = Math.min(this.r + v, 140)
+                } else {
+                    this.r = Math.max(this.r - v, this.radius)
+                }
+                return this.r
+            }
+            drawSlices() {
+                let colorIndex = 0;
+                let startAngle = -Math.PI / 2;
+
+                for (let k in this.options.data) {
+                    let val = this.options.data[k];
+                    let sliceAngle = (2 * Math.PI * val) / this.totalValue;
 
                     drawPieSlice(
                         this.ctx,
                         this.canvas.width / 2,
                         this.canvas.height / 2,
-                        this.radius,
+                        this.hoverId === colorIndex ? this.setV() : this.radius,
                         startAngle,
                         startAngle + sliceAngle,
-                        this.colors[colorIndex % this.colors.length]
+                        this.colors[colorIndex % this.colors.length],
+                        this.hoverId === colorIndex
                     );
 
                     startAngle += sliceAngle;
                     colorIndex++;
                 }
+            }
 
-                if (this.options.doughnutHoleSize) {
-                    drawPieSlice(
-                        this.ctx,
-                        this.canvas.width / 2,
-                        this.canvas.height / 2,
-                        this.options.doughnutHoleSize * this.radius,
-                        0,
-                        2 * Math.PI,
-                        "#FFF",
-                        "#FFF"
-                    );
 
-                    drawArc(
-                        this.ctx,
-                        this.canvas.width / 2,
-                        this.canvas.height / 2,
-                        this.options.doughnutHoleSize * this.radius,
-                        0,
-                        2 * Math.PI,
-                        "#000"
-                    );
+            drawGuideLine() {
+                let index = 0;
+                let startAngle = -Math.PI / 2;
+                const outerRadius = 10 + this.radius
+                let isRight = true
+                let sumAngle = 0
+                const guideLineWidth = 30
+                for (let k in this.options.data) {
+                    let val = this.options.data[k];
+                    const angle = (val / 100) * 360;
+                    // 计算左右位置
+                    sumAngle += angle
+
+                    if (sumAngle >= 180) isRight = false
+
+                    let sliceAngle = (angle * Math.PI) / 180;
+                    const midAngle = startAngle + sliceAngle / 2;
+                    const x = this.canvas.width / 2 + Math.cos(midAngle) * this.radius;
+                    const y = this.canvas.height / 2 + Math.sin(midAngle) * this.radius;
+
+                    // 计算外圈的坐标
+                    const x2 = this.canvas.width / 2 + Math.cos(midAngle) * outerRadius;
+                    const y2 = this.canvas.height / 2 + Math.sin(midAngle) * outerRadius;
+
+                    // 计算引线末端
+                    const x3 = isRight ? x2 + guideLineWidth : x2 - guideLineWidth;
+
+                    // 绘制折线
+                    drawPolyline(this.ctx, [{ x, y }, { x: x2, y: y2 }, { x: x3, y: y2 }], this.options.colors[index])
+                    // 绘制文本
+                    drawText(this.ctx, k, isRight ? x3 + 4 : x3 - k.length * 6, y2 + 3)
+
+                    startAngle += sliceAngle;
+                    index++;
                 }
             }
 
             drawLabels() {
-                var colorIndex = 0;
-                var startAngle = -Math.PI / 2;
-                for (var categ in this.options.data) {
-                    var val = this.options.data[categ];
-                    var sliceAngle = (2 * Math.PI * val) / this.totalValue;
-                    var labelX =
-                        this.canvas.width / 2 +
-                        (this.radius / 2) * Math.cos(startAngle + sliceAngle / 2);
-                    var labelY =
-                        this.canvas.height / 2 +
-                        (this.radius / 2) * Math.sin(startAngle + sliceAngle / 2);
 
-                    if (this.options.doughnutHoleSize) {
-                        var offset = (this.radius * this.options.doughnutHoleSize) / 2;
-                        labelX =
-                            this.canvas.width / 2 +
-                            (offset + this.radius / 2) * Math.cos(startAngle + sliceAngle / 2);
-                        labelY =
-                            this.canvas.height / 2 +
-                            (offset + this.radius / 2) * Math.sin(startAngle + sliceAngle / 2);
-                    }
-
-                    var labelText = Math.round((100 * val) / this.totalValue);
-                    this.ctx.fillStyle = "black";
-                    this.ctx.font = "32px Khand";
-                    this.ctx.fillText(labelText + "%", labelX, labelY);
-                    startAngle += sliceAngle;
-                }
             }
-
-            drawTitle() {
-                this.ctx.save();
-
-                this.ctx.textBaseline = "bottom";
-                this.ctx.textAlign = this.titleOptions.align;
-                this.ctx.fillStyle = this.titleOptions.fill;
-                this.ctx.font = `${this.titleOptions.font.weight} ${this.titleOptions.font.size} ${this.titleOptions.font.family}`;
-
-                let xPos = this.canvas.width / 2;
-
-                if (this.titleOptions.align == "left") {
-                    xPos = 10;
-                }
-                if (this.titleOptions.align == "right") {
-                    xPos = this.canvas.width - 10;
-                }
-
-                this.ctx.fillText(this.options.seriesName, xPos, this.canvas.height);
-
-                this.ctx.restore();
-            }
-
-            drawLegend() {
-                let pIndex = 0;
-                let legend = document.querySelector("div[for='myCanvas']");
-                let ul = document.createElement("ul");
-                legend.append(ul);
-
-                for (let ctg of Object.keys(this.options.data)) {
-                    let li = document.createElement("li");
-                    li.style.listStyle = "none";
-                    li.style.borderLeft =
-                        "20px solid " + this.colors[pIndex % this.colors.length];
-                    li.style.padding = "5px";
-                    li.textContent = ctg;
-                    ul.append(li);
-                    pIndex++;
-                }
-            }
-
             draw() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
                 this.drawSlices();
                 this.drawLabels();
-                this.drawTitle();
-                this.drawLegend();
+                this.drawGuideLine()
+                requestAnimationFrame(this.draw.bind(this))
             }
         }
 
-        var myPiechart = new PieChart({
+        const myPiechart = new PieChart({
             canvas: myCanvas,
-            seriesName: "Vinyl records",
+            seriesName: "fruit shop",
             padding: 40,
             data: {
-                "Classical Music": 16,
-                "Alternative Rock": 12,
-                "Pop": 18,
-                "Jazz": 32
+                "banana": 30,
+                "apple": 40,
+                "orange": 23,
+                "strawberry": 7,
             },
-            colors: ["#80DEEA", "#FFE082", "#FFAB91", "#CE93D8"],
+            colors: ["#5470C6", "#91CC75", "#fac858", "#ee6666"],
             titleOptions: {
                 align: "center",
                 fill: "black",

@@ -40,6 +40,34 @@
     #myCanvasWarp {
         width: 500px;
     }
+
+    #label-warp {
+        background: #fff;
+        position: fixed;
+        left: 0;
+        top: 0;
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        box-shadow: 2px 2px 20px 2px #a3a3a3;
+        border-radius: 4px;
+        visibility: hidden;
+    }
+
+    .label-cir {
+        width: 12px;
+        height: 12px;
+        margin-right: 12px;
+        border-radius: 50%;
+    }
+
+    .label-name {
+        margin-right: 16px;
+    }
+
+    .label-common {
+        font-size: 14px;
+    }
 </style>
 
 <body>
@@ -80,6 +108,7 @@
             ctx.fillRect(upperLeftCornerX, upperLeftCornerY, width, height);
             ctx.restore();
         }
+
         class BarChart {
             constructor(options) {
                 // 配置对象
@@ -93,6 +122,53 @@
                 // 得到实际的图表尺寸
                 this.canvasActualHeight = this.canvas.height - this.options.padding * 2;
                 this.canvasActualWidth = this.canvas.width - this.options.padding * 2;
+                // 存储柱子的位置信息等
+                this.barInfo = []
+                this.hoverId = -1
+                this.firstRender = true
+                this.currentHeights = [0, 0, 0, 0]
+                this.t = 1
+                this.v = 5
+                this.init()
+            }
+            init() {
+                // 初始化监听hover
+                this.canvas.addEventListener('mousemove', this.onMouseMove.bind(this))
+            }
+            drawLabels() {
+                // 创建一个父容器元素
+                this.labelContainer = document.createElement("div");
+                this.labelContainer.id = "label-warp";
+                document.body.appendChild(this.labelContainer);
+            }
+            updateLabels(cx, cy) {
+                const dataList = Object.entries(this.options.data)
+                if (this.hoverId >= 0) {
+                    this.labelContainer.style.visibility = 'visible'
+                    this.labelContainer.style.top = cy + 10 + 'px'
+                    this.labelContainer.style.left = cx + 10 + 'px'
+                    const item = dataList[this.hoverId]
+                    this.labelContainer.innerHTML = `<div style='background: ${this.colors[this.hoverId < 0 ? 0 : this.hoverId]}; ' class='label-cir'></div><div class='label-common label-name'>${item[0]}</div><div class='label-common label-val'>${item[1]}</div>`
+                } else {
+                    this.labelContainer.style.visibility = 'hidden'
+                }
+            }
+            onMouseMove(e) {
+                const { clientX, clientY } = e
+                const cx = clientX
+                const cy = clientY - this.canvas.offsetTop
+                this.hoverId = -1
+                for (let i = 0; i < this.barInfo.length; i++) {
+                    const pos = this.barInfo[i];
+                    const { x, y, width, height } = pos
+                    const right = x + width
+                    const bottom = y + height
+
+                    if (cx <= right && cx >= x && cy >= y && cy <= bottom) {
+                        this.hoverId = i
+                    }
+                }
+                this.updateLabels(clientX, clientY)
             }
             drawGridLines() {
                 let gridValue = 0;
@@ -128,22 +204,35 @@
                 // bar 尺寸
                 const barSize = this.canvasActualWidth / numberOfBars;
                 const values = Object.values(this.options.data);
+
                 for (const val of values) {
                     // 计算高度百分比
                     const barHeight = Math.round((this.canvasActualHeight * val) / this.maxValue);
+                    const x = this.options.padding + barIndex * barSize
+                    const y = this.canvas.height - this.options.padding
+                    if (this.barInfo.length < numberOfBars) {
+                        this.barInfo.push({ x, y, width: barSize, height: barHeight })
+                    }
+                    const color = this.hoverId === barIndex ? this.options.hoverColor : this.colors[barIndex]
+                    this.t = Math.max(this.t - 0.01, 0);
+                    const v = barHeight / this.t * 0.02
+
+                    this.currentHeights[barIndex] = Math.min(this.currentHeights[barIndex] + v, barHeight)
+
                     // 绘制
                     drawBar(
                         this.ctx,
-                        this.options.padding + barIndex * barSize,
-                        this.canvas.height - barHeight - this.options.padding,
+                        x,
+                        y - this.currentHeights[barIndex],
                         barSize,
-                        barHeight,
-                        this.colors[barIndex % this.colors.length]
+                        this.currentHeights[barIndex],
+                        color
                     );
+
                     barIndex++;
                 }
             }
-            drawLabel() {
+            drawTitle() {
                 this.ctx.save();
                 this.ctx.textBaseline = "bottom";
                 this.ctx.textAlign = this.titleOptions.align;
@@ -176,14 +265,16 @@
                 }
             }
             draw() {
-                // 绘制网格线
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                if (this.firstRender) {
+                    this.drawTitle();
+                    this.drawLabels()
+                    this.drawLegend();
+                    this.firstRender = false
+                }
                 this.drawGridLines();
-                // 绘制柱子
                 this.drawBars();
-                // 绘制 label
-                this.drawLabel();
-                // 绘制图例
-                this.drawLegend();
+                requestAnimationFrame(this.draw.bind(this))
             }
         }
         const myBarchart = new BarChart({
@@ -198,7 +289,8 @@
                 "Orange": 20,
                 "Strawberry": 3,
             },
-            colors: ["#a55ca5", "#67b6c7", "#bccd7a", "#eb9743"],
+            hoverColor: 'red',
+            colors: ["#5470C6", "#91CC75", "#fac858", "#ee6666"],
             titleOptions: {
                 align: "center",
                 fill: "black",
@@ -209,7 +301,7 @@
                 }
             }
         });
-        myBarchart.draw();
+        myBarchart.draw()
     </script>
 </body>
 
