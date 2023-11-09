@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K线图实例</title>
+    <style type="text/css">
+        body {
+            background-color: rgb(33, 33, 45);
+        }
+    </style>
+    <script type="text/javascript" src="js/jquery-1.11.0.min.js"></script>
+</head>
+
+<body>
+
+    <div id="chart" height="500" width="1200" style="margin:30px;"></div>
+    <script type="text/javascript">
+        var data_json = '{"FT":[{"time":"2017-01-03 00:00:00.000","topen":"7.39","tclose":"7.41","minclose":"7.36","maxclose":"7.44","qty":"6803999","amount":"50355027.62"},{"time":"2017-01-04 00:00:00.000","topen":"7.44","tclose":"7.49","minclose":"7.40","maxclose":"7.51","qty":"7250799","amount":"54132483.57"},{"time":"2017-01-05 00:00:00.000","topen":"7.51","tclose":"7.54","minclose":"7.44","maxclose":"7.57","qty":"8728094","amount":"65713209.88"},{"time":"2017-01-06 00:00:00.000","topen":"7.54","tclose":"7.57","minclose":"7.42","maxclose":"7.64","qty":"11189004","amount":"84449379.40"},{"time":"2017-01-09 00:00:00.000","topen":"7.60","tclose":"7.68","minclose":"7.55","maxclose":"7.72","qty":"13017319","amount":"99619638.19"},{"time":"2017-01-10 00:00:00.000","topen":"7.71","tclose":"7.65","minclose":"7.61","maxclose":"7.73","qty":"6828543","amount":"52258209.66"},{"time":"2017-01-11 00:00:00.000","topen":"7.65","tclose":"7.44","minclose":"7.32","maxclose":"7.65","qty":"15773700","amount":"117876279.05"},{"time":"2017-01-12 00:00:00.000","topen":"7.36","tclose":"7.35","minclose":"7.26","maxclose":"7.43","qty":"10324399","amount":"75652686.62"},{"time":"2017-01-13 00:00:00.000","topen":"7.32","tclose":"7.22","minclose":"7.13","maxclose":"7.35","qty":"10521421","amount":"75780977.13"},{"time":"2017-01-16 00:00:00.000","topen":"7.17","tclose":"7.04","minclose":"6.50","maxclose":"7.29","qty":"11523096","amount":"80855180.18"},{"time":"2017-01-17 00:00:00.000","topen":"6.97","tclose":"7.09","minclose":"6.78","maxclose":"7.09","qty":"8329300","amount":"57999258.02"},{"time":"2017-01-18 00:00:00.000","topen":"7.06","tclose":"6.96","minclose":"6.91","maxclose":"7.09","qty":"5849234","amount":"40906862.94"},{"time":"2017-01-19 00:00:00.000","topen":"6.96","tclose":"6.90","minclose":"6.83","maxclose":"6.96","qty":"4978216","amount":"34345910.40"},{"time":"2017-01-20 00:00:00.000","topen":"6.88","tclose":"7.06","minclose":"6.88","maxclose":"7.20","qty":"6958700","amount":"49170717.06"},{"time":"2017-01-23 00:00:00.000","topen":"7.07","tclose":"7.22","minclose":"7.04","maxclose":"7.27","qty":"8115966","amount":"58195379.80"},{"time":"2017-01-24 00:00:00.000","topen":"7.21","tclose":"7.21","minclose":"7.15","maxclose":"7.26","qty":"4471300","amount":"32221832.00"},{"time":"2017-01-25 00:00:00.000","topen":"7.20","tclose":"7.27","minclose":"7.18","maxclose":"7.33","qty":"4960941","amount":"36065095.58"},{"time":"2017-01-26 00:00:00.000","topen":"7.28","tclose":"7.30","minclose":"7.20","maxclose":"7.33","qty":"3779234","amount":"27503729.18"},{"time":"2017-02-03 00:00:00.000","topen":"7.30","tclose":"7.21","minclose":"7.20","maxclose":"7.31","qty":"1875000","amount":"13548598.00"},{"time":"2017-02-06 00:00:00.000","topen":"7.21","tclose":"7.24","minclose":"7.15","maxclose":"7.26","qty":"3997439","amount":"28814349.39"},{"time":"2017-02-07 00:00:00.000","topen":"7.23","tclose":"7.17","minclose":"7.13","maxclose":"7.24","qty":"5739885","amount":"41186715.01"},{"time":"2017-02-08 00:00:00.000","topen":"7.19","tclose":"7.22","minclose":"7.11","maxclose":"7.24","qty":"4280323","amount":"30787348.53"},{"time":"2017-02-09 00:00:00.000","topen":"7.24","tclose":"7.33","minclose":"7.21","maxclose":"7.44","qty":"13846606","amount":"101954169.40"},{"time":"2017-02-10 00:00:00.000","topen":"7.35","tclose":"7.35","minclose":"7.28","maxclose":"7.35","qty":"8232496","amount":"60289835.59"},{"time":"2017-02-13 00:00:00.000","topen":"7.37","tclose":"7.40","minclose":"7.30","maxclose":"7.45","qty":"10126461","amount":"74912440.22"},{"time":"2017-02-14 00:00:00.000","topen":"7.43","tclose":"7.41","minclose":"7.38","maxclose":"7.47","qty":"8646009","amount":"64236146.38"},{"time":"2017-02-15 00:00:00.000","topen":"7.44","tclose":"7.29","minclose":"7.26","maxclose":"7.44","qty":"7319749","amount":"53713165.60"},{"time":"2017-02-16 00:00:00.000","topen":"7.34","tclose":"7.32","minclose":"7.25","maxclose":"7.37","qty":"5964749","amount":"43647819.21"},{"time":"2017-02-17 00:00:00.000","topen":"7.33","tclose":"7.25","minclose":"7.23","maxclose":"7.34","qty":"5906051","amount":"42935726.24"},{"time":"2017-02-20 00:00:00.000","topen":"7.25","tclose":"7.26","minclose":"7.20","maxclose":"7.31","qty":"10199580","amount":"73925827.58"},{"time":"2017-02-21 00:00:00.000","topen":"7.27","tclose":"7.31","minclose":"7.21","maxclose":"7.31","qty":"6588354","amount":"47869763.66"},{"time":"2017-02-22 00:00:00.000","topen":"7.34","tclose":"7.24","minclose":"7.22","maxclose":"7.34","qty":"11014203","amount":"80032381.70"},{"time":"2017-02-23 00:00:00.000","topen":"7.26","tclose":"7.28","minclose":"7.23","maxclose":"7.33","qty":"7949103","amount":"57845098.74"},{"time":"2017-02-24 00:00:00.000","topen":"7.30","tclose":"7.59","minclose":"7.28","maxclose":"7.64","qty":"22140911","amount":"164872759.60"},{"time":"2017-02-27 00:00:00.000","topen":"7.60","tclose":"7.66","minclose":"7.56","maxclose":"7.80","qty":"27983112","amount":"214832223.98"},{"time":"2017-02-28 00:00:00.000","topen":"7.65","tclose":"7.70","minclose":"7.55","maxclose":"7.73","qty":"13140237","amount":"100309975.65"},{"time":"2017-03-01 00:00:00.000","topen":"7.73","tclose":"7.68","minclose":"7.62","maxclose":"7.73","qty":"11430763","amount":"87881290.80"},{"time":"2017-03-02 00:00:00.000","topen":"7.66","tclose":"7.58","minclose":"7.54","maxclose":"7.78","qty":"15004700","amount":"114527433.00"},{"time":"2017-03-03 00:00:00.000","topen":"7.58","tclose":"7.56","minclose":"7.45","maxclose":"7.58","qty":"7885542","amount":"59254905.42"},{"time":"2017-03-06 00:00:00.000","topen":"7.57","tclose":"7.57","minclose":"7.52","maxclose":"7.70","qty":"11740908","amount":"89023286.88"},{"time":"2017-03-07 00:00:00.000","topen":"7.59","tclose":"7.50","minclose":"7.45","maxclose":"7.62","qty":"10385144","amount":"78012163.59"},{"time":"2017-03-08 00:00:00.000","topen":"7.50","tclose":"7.48","minclose":"7.45","maxclose":"7.55","qty":"8451211","amount":"63354159.38"},{"time":"2017-03-09 00:00:00.000","topen":"7.48","tclose":"7.32","minclose":"7.28","maxclose":"7.48","qty":"10976467","amount":"80659184.46"},{"time":"2017-03-10 00:00:00.000","topen":"7.28","tclose":"7.40","minclose":"7.28","maxclose":"7.42","qty":"7760367","amount":"57169551.79"},{"time":"2017-03-13 00:00:00.000","topen":"7.45","tclose":"7.44","minclose":"7.36","maxclose":"7.47","qty":"6172460","amount":"45793488.68"},{"time":"2017-03-14 00:00:00.000","topen":"7.42","tclose":"7.51","minclose":"7.39","maxclose":"7.51","qty":"8893118","amount":"66150688.78"},{"time":"2017-03-15 00:00:00.000","topen":"7.51","tclose":"7.56","minclose":"7.38","maxclose":"7.63","qty":"13310184","amount":"99441676.94"},{"time":"2017-03-16 00:00:00.000","topen":"7.57","tclose":"7.64","minclose":"7.55","maxclose":"7.70","qty":"15003991","amount":"114338853.39"},{"time":"2017-03-17 00:00:00.000","topen":"7.68","tclose":"7.59","minclose":"7.57","maxclose":"7.70","qty":"9681246","amount":"73798772.36"},{"time":"2017-03-20 00:00:00.000","topen":"7.59","tclose":"7.66","minclose":"7.56","maxclose":"7.68","qty":"9238842","amount":"70501507.82"},{"time":"2017-03-21 00:00:00.000","topen":"7.66","tclose":"7.67","minclose":"7.61","maxclose":"7.70","qty":"7986886","amount":"61219262.74"},{"time":"2017-03-22 00:00:00.000","topen":"7.65","tclose":"7.60","minclose":"7.55","maxclose":"7.69","qty":"7064710","amount":"53764799.70"},{"time":"2017-03-23 00:00:00.000","topen":"7.61","tclose":"7.57","minclose":"7.46","maxclose":"7.64","qty":"12072140","amount":"90899772.60"},{"time":"2017-03-24 00:00:00.000","topen":"7.56","tclose":"7.65","minclose":"7.49","maxclose":"7.68","qty":"10218154","amount":"77659237.40"},{"time":"2017-03-27 00:00:00.000","topen":"7.65","tclose":"7.87","minclose":"7.65","maxclose":"8.30","qty":"32298417","amount":"255969353.42"},{"time":"2017-03-28 00:00:00.000","topen":"7.82","tclose":"7.88","minclose":"7.80","maxclose":"7.98","qty":"11629134","amount":"91614554.90"},{"time":"2017-03-29 00:00:00.000","topen":"7.90","tclose":"7.84","minclose":"7.82","maxclose":"7.98","qty":"12990818","amount":"102487052.42"},{"time":"2017-03-30 00:00:00.000","topen":"7.83","tclose":"7.69","minclose":"7.58","maxclose":"7.86","qty":"11711539","amount":"89922900.73"},{"time":"2017-03-31 00:00:00.000","topen":"7.69","tclose":"7.72","minclose":"7.58","maxclose":"7.75","qty":"7004100","amount":"53743285.56"},{"time":"2017-04-05 00:00:00.000","topen":"7.72","tclose":"7.87","minclose":"7.70","maxclose":"7.88","qty":"14328892","amount":"111851117.04"},{"time":"2017-04-06 00:00:00.000","topen":"7.89","tclose":"8.16","minclose":"7.82","maxclose":"8.19","qty":"25522010","amount":"204882157.10"},{"time":"2017-04-07 00:00:00.000","topen":"8.15","tclose":"8.16","minclose":"8.01","maxclose":"8.25","qty":"21623394","amount":"175989636.84"},{"time":"2017-04-10 00:00:00.000","topen":"8.00","tclose":"7.90","minclose":"7.90","maxclose":"8.08","qty":"17661666","amount":"141598094.64"},{"time":"2017-04-11 00:00:00.000","topen":"7.85","tclose":"8.17","minclose":"7.85","maxclose":"8.27","qty":"29701775","amount":"239856836.08"},{"time":"2017-04-12 00:00:00.000","topen":"8.12","tclose":"8.13","minclose":"8.05","maxclose":"8.24","qty":"19778368","amount":"161384760.24"},{"time":"2017-04-13 00:00:00.000","topen":"8.13","tclose":"8.33","minclose":"8.12","maxclose":"8.40","qty":"28015032","amount":"232166463.00"},{"time":"2017-04-14 00:00:00.000","topen":"8.34","tclose":"8.13","minclose":"8.00","maxclose":"8.34","qty":"20886572","amount":"169809748.05"},{"time":"2017-04-17 00:00:00.000","topen":"8.06","tclose":"7.83","minclose":"7.76","maxclose":"8.10","qty":"15731200","amount":"123846910.40"},{"time":"2017-04-18 00:00:00.000","topen":"7.90","tclose":"7.72","minclose":"7.60","maxclose":"7.93","qty":"11185400","amount":"86889469.08"},{"time":"2017-04-19 00:00:00.000","topen":"7.66","tclose":"7.72","minclose":"7.51","maxclose":"7.74","qty":"10298785","amount":"78511629.40"},{"time":"2017-04-20 00:00:00.000","topen":"7.72","tclose":"7.80","minclose":"7.60","maxclose":"7.82","qty":"10029648","amount":"77391176.60"},{"time":"2017-04-21 00:00:00.000","topen":"7.80","tclose":"7.80","minclose":"7.71","maxclose":"7.88","qty":"7920510","amount":"61693210.02"},{"time":"2017-04-24 00:00:00.000","topen":"7.79","tclose":"7.49","minclose":"7.40","maxclose":"7.83","qty":"13713512","amount":"104471028.58"},{"time":"2017-04-25 00:00:00.000","topen":"7.48","tclose":"7.10","minclose":"7.07","maxclose":"7.55","qty":"13692690","amount":"100414710.72"},{"time":"2017-04-26 00:00:00.000","topen":"7.12","tclose":"7.16","minclose":"7.09","maxclose":"7.28","qty":"10537310","amount":"75304259.70"},{"time":"2017-04-27 00:00:00.000","topen":"7.16","tclose":"7.24","minclose":"6.96","maxclose":"7.25","qty":"11018024","amount":"78200219.44"},{"time":"2017-04-28 00:00:00.000","topen":"7.20","tclose":"7.30","minclose":"7.16","maxclose":"7.32","qty":"5077580","amount":"36769962.60"},{"time":"2017-05-02 00:00:00.000","topen":"7.28","tclose":"7.20","minclose":"7.15","maxclose":"7.28","qty":"5632300","amount":"40572311.60"},{"time":"2017-05-03 00:00:00.000","topen":"7.19","tclose":"7.37","minclose":"7.13","maxclose":"7.41","qty":"8294058","amount":"59947583.20"},{"time":"2017-05-04 00:00:00.000","topen":"7.37","tclose":"7.30","minclose":"7.24","maxclose":"7.37","qty":"6719920","amount":"48896683.20"},{"time":"2017-05-05 00:00:00.000","topen":"7.27","tclose":"7.05","minclose":"6.96","maxclose":"7.29","qty":"7409798","amount":"52938929.90"},{"time":"2017-05-08 00:00:00.000","topen":"7.08","tclose":"7.00","minclose":"6.94","maxclose":"7.08","qty":"5310900","amount":"37250222.00"},{"time":"2017-05-09 00:00:00.000","topen":"7.03","tclose":"7.07","minclose":"6.96","maxclose":"7.11","qty":"3329900","amount":"23410631.00"},{"time":"2017-05-10 00:00:00.000","topen":"7.07","tclose":"7.03","minclose":"6.95","maxclose":"7.15","qty":"5828915","amount":"41017923.15"},{"time":"2017-05-11 00:00:00.000","topen":"6.98","tclose":"6.99","minclose":"6.77","maxclose":"7.02","qty":"7518975","amount":"51909055.87"},{"time":"2017-05-12 00:00:00.000","topen":"6.99","tclose":"6.83","minclose":"6.80","maxclose":"7.00","qty":"5998500","amount":"41211639.52"},{"time":"2017-05-15 00:00:00.000","topen":"6.83","tclose":"6.79","minclose":"6.78","maxclose":"6.92","qty":"3478600","amount":"23747341.00"},{"time":"2017-05-16 00:00:00.000","topen":"6.75","tclose":"6.76","minclose":"6.51","maxclose":"6.79","qty":"9454237","amount":"63142527.76"},{"time":"2017-05-17 00:00:00.000","topen":"6.77","tclose":"7.13","minclose":"6.74","maxclose":"7.17","qty":"18511066","amount":"128041344.15"},{"time":"2017-05-18 00:00:00.000","topen":"6.91","tclose":"6.92","minclose":"6.81","maxclose":"7.03","qty":"13381613","amount":"92641686.31"},{"time":"2017-05-19 00:00:00.000","topen":"6.88","tclose":"6.94","minclose":"6.86","maxclose":"6.99","qty":"6932900","amount":"48077367.00"},{"time":"2017-05-22 00:00:00.000","topen":"6.90","tclose":"6.83","minclose":"6.83","maxclose":"7.06","qty":"8106200","amount":"56361613.35"},{"time":"2017-05-23 00:00:00.000","topen":"6.76","tclose":"6.75","minclose":"6.67","maxclose":"6.86","qty":"5548845","amount":"37478268.15"},{"time":"2017-05-24 00:00:00.000","topen":"6.68","tclose":"6.76","minclose":"6.62","maxclose":"6.77","qty":"4735549","amount":"31711341.34"},{"time":"2017-05-25 00:00:00.000","topen":"6.75","tclose":"6.76","minclose":"6.60","maxclose":"6.77","qty":"8656272","amount":"58051551.97"},{"time":"2017-05-26 00:00:00.000","topen":"6.77","tclose":"6.71","minclose":"6.68","maxclose":"6.79","qty":"5274400","amount":"35468888.00"},{"time":"2017-05-31 00:00:00.000","topen":"6.85","tclose":"6.78","minclose":"6.74","maxclose":"6.85","qty":"5465956","amount":"37088910.46"},{"time":"2017-06-01 00:00:00.000","topen":"6.74","tclose":"6.65","minclose":"6.60","maxclose":"6.78","qty":"7086710","amount":"47227005.44"},{"time":"2017-06-02 00:00:00.000","topen":"6.63","tclose":"6.67","minclose":"6.56","maxclose":"6.68","qty":"4473818","amount":"29576021.44"},{"time":"2017-06-05 00:00:00.000","topen":"6.80","tclose":"6.85","minclose":"6.71","maxclose":"6.92","qty":"7556102","amount":"51646371.72"},{"time":"2017-06-06 00:00:00.000","topen":"6.83","tclose":"6.91","minclose":"6.80","maxclose":"6.92","qty":"6015118","amount":"41430013.02"},{"time":"2017-06-07 00:00:00.000","topen":"6.92","tclose":"6.93","minclose":"6.88","maxclose":"6.97","qty":"6462998","amount":"44714014.64"},{"time":"2017-06-08 00:00:00.000","topen":"6.94","tclose":"6.87","minclose":"6.85","maxclose":"6.96","qty":"6083700","amount":"41885444.00"},{"time":"2017-06-09 00:00:00.000","topen":"6.83","tclose":"6.88","minclose":"6.80","maxclose":"6.88","qty":"6655321","amount":"45638698.82"},{"time":"2017-06-12 00:00:00.000","topen":"6.88","tclose":"6.93","minclose":"6.83","maxclose":"6.98","qty":"6674498","amount":"46195165.78"},{"time":"2017-06-13 00:00:00.000","topen":"6.90","tclose":"6.94","minclose":"6.88","maxclose":"6.95","qty":"5862462","amount":"40572117.28"},{"time":"2017-06-14 00:00:00.000","topen":"6.95","tclose":"6.92","minclose":"6.89","maxclose":"6.95","qty":"3469849","amount":"23975820.59"},{"time":"2017-06-15 00:00:00.000","topen":"6.93","tclose":"6.93","minclose":"6.87","maxclose":"6.94","qty":"5135080","amount":"35490281.56"},{"time":"2017-06-16 00:00:00.000","topen":"6.93","tclose":"6.93","minclose":"6.92","maxclose":"7.03","qty":"4866300","amount":"33848391.40"},{"time":"2017-06-19 00:00:00.000","topen":"6.91","tclose":"6.84","minclose":"6.81","maxclose":"6.95","qty":"8531001","amount":"58423019.17"},{"time":"2017-06-20 00:00:00.000","topen":"6.87","tclose":"6.75","minclose":"6.71","maxclose":"6.87","qty":"11814373","amount":"80075557.93"},{"time":"2017-06-21 00:00:00.000","topen":"6.76","tclose":"6.72","minclose":"6.68","maxclose":"6.78","qty":"5771200","amount":"38812286.00"},{"time":"2017-06-22 00:00:00.000","topen":"6.75","tclose":"6.69","minclose":"6.66","maxclose":"6.78","qty":"10259622","amount":"68676142.16"},{"time":"2017-06-23 00:00:00.000","topen":"6.68","tclose":"6.70","minclose":"6.54","maxclose":"6.70","qty":"14926458","amount":"98386908.04"},{"time":"2017-06-26 00:00:00.000","topen":"6.66","tclose":"6.82","minclose":"6.64","maxclose":"6.83","qty":"13098220","amount":"88441466.00"},{"time":"2017-06-27 00:00:00.000","topen":"6.82","tclose":"6.86","minclose":"6.77","maxclose":"6.89","qty":"7429800","amount":"50839098.40"},{"time":"2017-06-28 00:00:00.000","topen":"6.86","tclose":"6.86","minclose":"6.81","maxclose":"6.90","qty":"5218120","amount":"35752967.40"},{"time":"2017-06-29 00:00:00.000","topen":"6.85","tclose":"6.89","minclose":"6.83","maxclose":"6.91","qty":"7557822","amount":"52047318.80"},{"time":"2017-06-30 00:00:00.000","topen":"6.88","tclose":"7.04","minclose":"6.85","maxclose":"7.10","qty":"10824249","amount":"75419158.29"},{"time":"2017-07-03 00:00:00.000","topen":"7.08","tclose":"7.04","minclose":"6.96","maxclose":"7.08","qty":"5395500","amount":"37805715.78"},{"time":"2017-07-04 00:00:00.000","topen":"7.02","tclose":"6.95","minclose":"6.91","maxclose":"7.02","qty":"4900803","amount":"34051552.76"},{"time":"2017-07-05 00:00:00.000","topen":"6.92","tclose":"6.97","minclose":"6.91","maxclose":"7.00","qty":"3943700","amount":"27428605.40"},{"time":"2017-07-06 00:00:00.000","topen":"6.97","tclose":"7.02","minclose":"6.94","maxclose":"7.04","qty":"6488860","amount":"45431281.46"},{"time":"2017-07-07 00:00:00.000","topen":"7.02","tclose":"7.01","minclose":"6.95","maxclose":"7.02","qty":"4203200","amount":"29315141.40"},{"time":"2017-07-10 00:00:00.000","topen":"7.00","tclose":"6.91","minclose":"6.88","maxclose":"7.01","qty":"5418311","amount":"37514869.90"},{"time":"2017-07-11 00:00:00.000","topen":"6.91","tclose":"6.90","minclose":"6.84","maxclose":"6.93","qty":"6080620","amount":"41862289.80"},{"time":"2017-07-12 00:00:00.000","topen":"6.87","tclose":"6.82","minclose":"6.64","maxclose":"6.88","qty":"9085582","amount":"61213513.28"},{"time":"2017-07-13 00:00:00.000","topen":"6.77","tclose":"6.83","minclose":"6.75","maxclose":"6.84","qty":"3900000","amount":"26468550.00"},{"time":"2017-07-14 00:00:00.000","topen":"6.83","tclose":"6.81","minclose":"6.71","maxclose":"6.83","qty":"3138500","amount":"21277806.00"},{"time":"2017-07-17 00:00:00.000","topen":"6.80","tclose":"6.65","minclose":"6.51","maxclose":"6.80","qty":"8247332","amount":"54768203.66"},{"time":"2017-07-18 00:00:00.000","topen":"6.62","tclose":"6.53","minclose":"6.10","maxclose":"6.63","qty":"11514561","amount":"73766699.46"},{"time":"2017-07-19 00:00:00.000","topen":"6.53","tclose":"6.53","minclose":"6.31","maxclose":"6.54","qty":"8111581","amount":"52308372.45"},{"time":"2017-07-20 00:00:00.000","topen":"6.53","tclose":"6.52","minclose":"6.47","maxclose":"6.58","qty":"6162700","amount":"40176646.19"},{"time":"2017-07-21 00:00:00.000","topen":"6.47","tclose":"6.52","minclose":"6.47","maxclose":"6.54","qty":"3349900","amount":"21807482.00"},{"time":"2017-07-24 00:00:00.000","topen":"6.52","tclose":"6.55","minclose":"6.52","maxclose":"6.64","qty":"7916398","amount":"52044542.80"},{"time":"2017-07-25 00:00:00.000","topen":"6.60","tclose":"6.63","minclose":"6.58","maxclose":"6.72","qty":"6519545","amount":"43250315.34"},{"time":"2017-07-26 00:00:00.000","topen":"6.63","tclose":"6.45","minclose":"6.33","maxclose":"6.63","qty":"12339743","amount":"79861463.86"},{"time":"2017-07-27 00:00:00.000","topen":"6.45","tclose":"6.45","minclose":"6.35","maxclose":"6.50","qty":"8810922","amount":"56754659.08"},{"time":"2017-07-28 00:00:00.000","topen":"6.44","tclose":"6.39","minclose":"6.37","maxclose":"6.46","qty":"6204291","amount":"39757229.53"},{"time":"2017-07-31 00:00:00.000","topen":"6.40","tclose":"6.45","minclose":"6.36","maxclose":"6.48","qty":"6115687","amount":"39319643.35"},{"time":"2017-08-01 00:00:00.000","topen":"6.47","tclose":"6.45","minclose":"6.43","maxclose":"6.48","qty":"5437571","amount":"35087794.04"},{"time":"2017-08-02 00:00:00.000","topen":"6.46","tclose":"6.39","minclose":"6.30","maxclose":"6.49","qty":"7227552","amount":"46184976.24"},{"time":"2017-08-03 00:00:00.000","topen":"6.39","tclose":"6.40","minclose":"6.37","maxclose":"6.43","qty":"3889920","amount":"24915404.80"},{"time":"2017-08-04 00:00:00.000","topen":"6.39","tclose":"6.40","minclose":"6.38","maxclose":"6.43","qty":"4203800","amount":"26914256.00"},{"time":"2017-08-07 00:00:00.000","topen":"6.40","tclose":"6.63","minclose":"6.39","maxclose":"6.69","qty":"12693373","amount":"83252054.58"},{"time":"2017-08-08 00:00:00.000","topen":"6.66","tclose":"6.55","minclose":"6.52","maxclose":"6.66","qty":"5734662","amount":"37697396.86"},{"time":"2017-08-09 00:00:00.000","topen":"6.58","tclose":"6.71","minclose":"6.57","maxclose":"6.77","qty":"9916362","amount":"66490457.72"},{"time":"2017-08-10 00:00:00.000","topen":"6.75","tclose":"6.63","minclose":"6.62","maxclose":"6.77","qty":"5699100","amount":"38102590.00"},{"time":"2017-08-11 00:00:00.000","topen":"6.66","tclose":"6.58","minclose":"6.51","maxclose":"6.66","qty":"4929691","amount":"32425518.14"},{"time":"2017-08-14 00:00:00.000","topen":"6.58","tclose":"6.65","minclose":"6.56","maxclose":"6.71","qty":"5056692","amount":"33674854.96"},{"time":"2017-08-15 00:00:00.000","topen":"6.69","tclose":"6.60","minclose":"6.56","maxclose":"6.69","qty":"3738302","amount":"24672683.12"},{"time":"2017-08-16 00:00:00.000","topen":"6.61","tclose":"6.61","minclose":"6.55","maxclose":"6.65","qty":"2917600","amount":"19223430.00"},{"time":"2017-08-17 00:00:00.000","topen":"6.63","tclose":"6.62","minclose":"6.59","maxclose":"6.64","qty":"3233300","amount":"21404935.27"},{"time":"2017-08-18 00:00:00.000","topen":"6.62","tclose":"6.57","minclose":"6.53","maxclose":"6.62","qty":"4897600","amount":"32146796.40"},{"time":"2017-08-21 00:00:00.000","topen":"6.58","tclose":"6.72","minclose":"6.55","maxclose":"6.78","qty":"9423702","amount":"62596442.88"}],"status":0}';
+
+        var jsonArray = JSON.parse(data_json);
+
+        var FT = jsonArray.FT;
+        var dataArr = new Array();
+        for (var i = 0; i < FT.length; i++) {
+            var A1 = new Array();
+            A1[0] = setTime(FT[i].time);
+
+            var A2 = new Array();
+            A2[0] = parseFloat(FT[i].topen).toFixed(2);
+            A2[1] = parseFloat(FT[i].tclose).toFixed(2);
+            A2[2] = parseFloat(FT[i].minclose).toFixed(2);
+            A2[3] = parseFloat(FT[i].maxclose).toFixed(2);
+
+            A1[1] = A2;
+            dataArr.push(A1);
+        }
+
+
+        var MA5 = calculateMA(5, dataArr);
+        var MA10 = calculateMA(10, dataArr);
+        var MA20 = calculateMA(20, dataArr);
+        var MA30 = calculateMA(30, dataArr);
+
+        // 声明所需变量 
+        var canvas, ctx; //canvas DOM    canvas上下文
+        // 图表属性
+        var cWidth, cHeight, cMargin, cSpace; //canvas中部的宽/高  canvas内边距/文字边距
+        var originX, originY; //坐标轴原点
+        // 图属性
+        var bMargin, tobalBars, bWidth, maxValue, minValue; //每个k线图间间距  数量 宽度   所有k线图的最大值/最小值 
+        var totalYNomber; //y轴上的标识数量
+        var showArr; //显示出来的数据部分（因为可以选择范围，所以需要这个数据）
+
+        //范围选择属性
+        var dragBarX, dragBarWidth; //范围选择条中的调节按钮的位置，宽度
+
+        // 运动相关变量
+        var ctr, numctr, speed; //运动的起步，共有多少步，运动速度（timer的时间）
+        //鼠标移动
+        var mousePosition = {}; //用户存放鼠标位置
+
+        var MA5_ox1, MA5_oy1, MA5_ox2, MA5_oy2;
+        var MA10_ox1, MA10_oy1, MA10_ox2, MA10_oy2;
+        var MA20_ox1, MA20_oy1, MA20_ox2, MA20_oy2;
+        var MA30_ox1, MA30_oy1, MA30_ox2, MA30_oy2;
+
+        var point_MA5 = new Array();
+        var point_MA10 = new Array();
+        var point_MA20 = new Array();
+        var point_MA30 = new Array();
+
+        goChart(document.getElementById("chart"), dataArr);
+
+
+        drawLineLabelMarkers(); // 绘制图表轴、标签和标记
+
+
+        drawBarAnimate(); // 绘制柱状图的动画
+
+        //绘制拖动轴
+        drawDragBar();
+        // 绘制图表轴、标签和标记
+        function drawLineLabelMarkers() {
+            ctx.font = "24px Arial";
+            ctx.lineWidth = 2;
+            ctx.fillStyle = "#000";
+            ctx.strokeStyle = "#000";
+            // y轴
+            drawLine(originX, originY, originX, cMargin);
+            // x轴
+            drawLine(originX, originY, originX + cWidth, originY);
+
+            // 绘制标记
+            drawMarkers();
+        }
+
+        function drawMoveLine(x, y, X, Y, color) {
+
+            /*绘制二次贝塞尔曲线*/
+            ctx.strokeStyle = "white";
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.quadraticCurveTo((X - x) / 4 + x, y, X, Y);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+        }
+
+        // 画线的方法
+        function drawLine(x, y, X, Y) {
+            ctx.strokeStyle = "white";
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(X, Y);
+            ctx.stroke();
+            ctx.closePath();
+        }
+
+        function drawLineWithColor(x, y, X, Y, color) {
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(X, Y);
+            ctx.stroke();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 3;
+            ctx.closePath();
+        }
+
+
+
+        function setTime(time) {
+            time = time.substring(0, 11);
+            return time;
+        }
+
+
+
+        // 绘制标记
+        function drawMarkers() {
+            ctx.strokeStyle = "#E0E0E0";
+            // 绘制 y
+            var oneVal = (maxValue - minValue) / totalYNomber;
+            ctx.textAlign = "right";
+            for (var i = 1; i <= totalYNomber; i++) {
+                var markerVal = parseInt(i * oneVal + minValue);;
+                var xMarker = originX - 10;
+                var yMarker = parseInt(originY - cHeight * (markerVal - minValue) / (maxValue - minValue));
+                ctx.fillStyle = "white";
+                ctx.font = "22px Verdana";
+                ctx.fillText(markerVal, xMarker - 15, yMarker, cSpace); // 文字
+                if (i > 0) {
+                    drawLine(originX + 1, yMarker - 3, originX - 9, yMarker - 3);
+                }
+            }
+
+            // 绘制 x
+            var textNb = 6;
+            ctx.textAlign = "center";
+            for (var i = 0; i < tobalBars; i++) {
+                if (tobalBars > textNb && i % parseInt(tobalBars / 10) != 0) {
+                    continue;
+                }
+                var markerVal = dataArr[i][0];
+                var xMarker = parseInt(originX + cWidth * (i / tobalBars) + bMargin + bWidth / 2);
+                var yMarker = originY + 30;
+                ctx.fillStyle = "white";
+                ctx.font = "22px Verdana";
+                ctx.fillText(markerVal, xMarker, yMarker, cSpace); // 文字
+                if (i > 0) {
+                    drawLine(xMarker, originY, xMarker, originY - 10);
+                }
+            }
+            // 绘制标题 y
+            ctx.save();
+            ctx.rotate(-Math.PI / 2);
+            //ctx.fillText("指 数", -canvas.height / 2, cSpace - 20);
+            ctx.restore();
+            // 绘制标题 x
+            //ctx.fillText("日 期", originX + cWidth / 2, originY + cSpace - 20);
+        };
+
+
+
+
+
+
+
+        //绘制k形图
+        function drawBarAnimate(mouseMove) {
+            point_MA5 = new Array();
+            point_MA10 = new Array();
+            point_MA20 = new Array();
+            point_MA30 = new Array();
+            var parsent = ctr / numctr;
+            for (var i = 0; i < tobalBars; i++) {
+                var oneVal = parseInt(maxValue / totalYNomber);
+                var data = dataArr[i][1];
+                var color = "#30C7C9";
+                var barVal = data[0];
+                var disY = 0;
+                //开盘0 收盘1 最低2 最高3   跌30C7C9  涨D7797F
+                if (data[1] > data[0]) { //涨
+                    color = "#D7797F";
+                    barVal = data[1];
+                    disY = data[1] - data[0];
+                } else {
+                    disY = data[0] - data[1];
+                }
+                var showH = disY / (maxValue - minValue) * cHeight * parsent;
+                showH = showH > 2 ? showH : 2;
+
+                var barH = parseInt(cHeight * (barVal - minValue) / (maxValue - minValue));
+                var y = originY - barH;
+                var x = originX + ((bWidth + bMargin) * i + bMargin) * parsent;
+
+                drawMA(MA5, i, x, "MA5");
+                drawMA(MA10, i, x, "MA10");
+                drawMA(MA20, i, x, "MA20");
+                drawMA(MA30, i, x, "MA30");
+
+
+
+
+            }
+
+
+            drawBezier(point_MA5, "rgb(194,54,49)", 5);
+            drawBezier(point_MA10, "rgb(47,69,84)", 10);
+            drawBezier(point_MA20, "rgb(97,160,168)", 20);
+            drawBezier(point_MA30, "rgb(212,130,101)", 30);
+
+            for (var i = 0; i < tobalBars; i++) {
+                var oneVal = parseInt(maxValue / totalYNomber);
+                var data = dataArr[i][1];
+                var color = "rgb(13,244,155)";
+                var barVal = data[0];
+                var disY = 0;
+                //开盘0 收盘1 最低2 最高3   跌30C7C9  涨D7797F
+                if (data[1] > data[0]) { //涨
+                    color = "rgb(253,16,80)";
+                    barVal = data[1];
+                    disY = data[1] - data[0];
+                } else {
+                    disY = data[0] - data[1];
+                }
+                var showH = disY / (maxValue - minValue) * cHeight * parsent;
+                showH = showH > 2 ? showH : 2;
+
+                var barH = parseInt(cHeight * (barVal - minValue) / (maxValue - minValue));
+                var y = originY - barH;
+                var x = originX + ((bWidth + bMargin) * i + bMargin) * parsent;
+
+                drawRect(x, y, bWidth, showH, mouseMove, color, true); //开盘收盘  高度减一避免盖住x轴
+
+                //最高最低的线
+                showH = (data[3] - data[2]) / (maxValue - minValue) * cHeight * parsent;
+                showH = showH > 2 ? showH : 2;
+
+                y = originY - parseInt(cHeight * (data[3] - minValue) / (maxValue - minValue));
+                drawRect(parseInt(x + bWidth / 2 - 1), y, 2, showH, mouseMove, color); //最高最低  高度减一避免盖住x轴
+
+
+            }
+
+            if (ctr < numctr) {
+                ctr++;
+                setTimeout(function () {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    drawLineLabelMarkers();
+                    drawBarAnimate();
+                    drawDragBar();
+                }, speed *= 0.03);
+            }
+
+        }
+
+
+        function drawBezier(point, color, num) {
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.font = "20px SimSun";
+            ctx.fillStyle = "#ffffff";
+            for (i = 0; i < point.length; i++) {
+
+                if (i < num + 2) {
+                    ctx.moveTo(point[i].x, point[i].y);
+                } else { //注意是从1开始
+                    var ctrlP = getCtrlPoint(point, i - 1);
+                    ctx.bezierCurveTo(ctrlP.pA.x, ctrlP.pA.y, ctrlP.pB.x, ctrlP.pB.y, point[i].x, point[i].y);
+                    //ctx.fillText("("+point[i].x+","+point[i].y+")",point[i].x,point[i].y);
+                }
+            }
+            ctx.stroke();
+        }
+
+
+        function getCtrlPoint(ps, i, a, b) {
+            if (!a || !b) {
+                a = 0.25;
+                b = 0.25;
+            }
+            //处理两种极端情形
+            if (i < 1) {
+                var pAx = ps[0].x + (ps[1].x - ps[0].x) * a;
+                var pAy = ps[0].y + (ps[1].y - ps[0].y) * a;
+            } else {
+                var pAx = ps[i].x + (ps[i + 1].x - ps[i - 1].x) * a;
+                var pAy = ps[i].y + (ps[i + 1].y - ps[i - 1].y) * a;
+            }
+            if (i > ps.length - 3) {
+                var last = ps.length - 1
+                var pBx = ps[last].x - (ps[last].x - ps[last - 1].x) * b;
+                var pBy = ps[last].y - (ps[last].y - ps[last - 1].y) * b;
+            } else {
+                var pBx = ps[i + 1].x - (ps[i + 2].x - ps[i].x) * b;
+                var pBy = ps[i + 1].y - (ps[i + 2].y - ps[i].y) * b;
+            }
+            return {
+                pA: { x: pAx, y: pAy },
+                pB: { x: pBx, y: pBy }
+            }
+        }
+
+
+        function drawMA(MA, i, x, type) {
+            var MAVal = MA[i];
+            var MAH = parseInt(cHeight * (MAVal - minValue) / (maxValue - minValue));
+            var MAy = originY - MAH;
+            if (type == "MA5") {
+                MA5_ox1 = x + bWidth / 2;
+                MA5_oy1 = MAy;
+                point_MA5.push({ x: MA5_ox1, y: MA5_oy1 });
+            }
+            if (type == "MA10") {
+                MA10_ox1 = x + bWidth / 2;
+                MA10_oy1 = MAy;
+                point_MA10.push({ x: MA10_ox1, y: MA10_oy1 });
+            }
+            if (type == "MA20") {
+
+                MA20_ox1 = x + bWidth / 2;
+                MA20_oy1 = MAy;
+                point_MA20.push({ x: MA20_ox1, y: MA20_oy1 });
+            }
+            if (type == "MA30") {
+                MA30_ox1 = x + bWidth / 2;
+                MA30_oy1 = MAy;
+                point_MA30.push({ x: MA30_ox1, y: MA30_oy1 });
+            }
+
+
+
+        }
+
+        //绘制方块
+        function drawRect(x, y, X, Y, mouseMove, color, ifBigBar, ifDrag) {
+
+            ctx.beginPath();
+
+            if (parseInt(x) % 2 !== 0) { //避免基数像素在普通分辨率屏幕上出现方块模糊的情况
+                x += 0;
+            }
+            if (parseInt(y) % 2 !== 0) {
+                y += 0;
+            }
+            if (parseInt(X) % 2 !== 0) {
+                X += 0;
+            }
+            if (parseInt(Y) % 2 !== 0) {
+                Y += 0;
+            }
+            ctx.rect(parseInt(x), parseInt(y), parseInt(X), parseInt(Y));
+
+            if (ifBigBar && mouseMove && ctx.isPointInPath(mousePosition.x * 2, mousePosition.y * 2)) { //如果是鼠标移动的到柱状图上，重新绘制图表
+                ctx.strokeStyle = color;
+                ctx.strokeWidth = 20;
+                ctx.stroke();
+            }
+            //如果移动到拖动选择范围按钮
+            canvas.style.cursor = "default";
+            if (ifDrag && ctx.isPointInPath(mousePosition.x * 2, mousePosition.y * 2)) { //如果是鼠标移动的到调节范围按钮上，改变鼠标样式
+                //console.log(123);
+                canvas.style.cursor = "all-scroll";
+            }
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.closePath();
+
+        }
+
+
+
+        function drawDragBar() {
+            drawRect(originX, originY + cSpace, cWidth, cMargin, false, "white");
+            drawRect(originX, originY + cSpace, dragBarX - originX, cMargin, false, "rgb(87,93,110)");
+            drawRect(dragBarX, originY + cSpace, dragBarWidth, cMargin, false, "red", false, true);
+        }
+
+        function goChart(cBox, dataArr) {
+
+
+
+
+            // 创建canvas并获得canvas上下文
+            canvas = document.createElement("canvas");
+            if (canvas && canvas.getContext) {
+                ctx = canvas.getContext("2d");
+            }
+
+            canvas.innerHTML = "你的浏览器不支持HTML5 canvas";
+            cBox.appendChild(canvas);
+
+            initChart(); // 图表初始化
+
+            // 图表初始化
+            function initChart() {
+                // 图表信息
+                cMargin = 40;
+                cSpace = 80;
+                //将canvas扩大2倍，然后缩小，以适应高清屏幕
+                canvas.width = cBox.getAttribute("width") * 2;
+                canvas.height = cBox.getAttribute("height") * 2;
+                canvas.style.height = canvas.height / 2 + "px";
+                canvas.style.width = canvas.width / 2 + "px";
+                cHeight = canvas.height - cMargin * 2 - cSpace * 2;
+                cWidth = canvas.width - cMargin * 2 - cSpace * 2;
+                originX = cMargin + cSpace;
+                originY = cMargin + cHeight;
+
+                showArr = dataArr.slice(0, parseInt(dataArr.length));
+
+
+                // 柱状图信息
+                tobalBars = showArr.length;
+                bWidth = parseFloat(cWidth / tobalBars / 3);
+                bMargin = parseFloat((cWidth - bWidth * tobalBars) / (tobalBars + 1));
+                //算最大值，最小值
+                maxValue = 0;
+                minValue = 9999999;
+                for (var i = 0; i < dataArr.length; i++) {
+                    var barVal = dataArr[i][1][3];
+                    if (barVal > maxValue) {
+                        maxValue = barVal;
+                    }
+                    var barVal2 = dataArr[i][1][2];
+                    if (barVal2 < minValue) {
+                        minValue = barVal2;
+                    }
+
+                }
+                maxValue += 2; //上面预留20的空间
+                minValue -= 2; //下面预留20的空间
+                totalYNomber = 10;
+                // 运动相关
+                ctr = 1;
+                numctr = 20;
+                speed = 0;
+
+                dragBarWidth = 10;
+                dragBarX = cWidth + cSpace + cMargin - dragBarWidth;
+
+            }
+
+        }
+
+        //检测鼠标移动
+        var mouseTimer = null;
+        addMouseMove();
+
+        function addMouseMove() {
+            canvas.addEventListener("mousemove", function (e) {
+                var parsent = ctr / numctr;
+                var x = event.pageX - canvas.getBoundingClientRect().left - 60;
+                var y = -event.pageY + canvas.getBoundingClientRect().top + 400;
+                if (y > 0 && x > 0) {
+                    var positionx = 1;
+                    for (var i = 0; i < tobalBars; i++) {
+                        if (x >= (1080 / tobalBars) * i) {
+                            positionx = i + 1;
+                        }
+                    }
+                    var xx = originX + ((bWidth + bMargin) * (positionx - 1) + bMargin) * parsent;
+
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    drawLineLabelMarkers();
+                    drawBarAnimate(true);
+                    drawDragBar();
+                    drawLineWithColor(parseInt(xx + bWidth / 2 - 1), 40, parseInt(xx + bWidth / 2 - 1), 800);
+                    drawDashLine(ctx, 120, canvas.getBoundingClientRect().top + event.pageY * 2 - 90, 760 * 3, canvas.getBoundingClientRect().top + event.pageY * 2 - 90, 5);
+
+
+                    var vx = 10;
+                    var vy = canvas.getBoundingClientRect().top + event.pageY * 2 - 90 - 20;
+                    ctx.beginPath();
+                    ctx.moveTo(vx, vy);
+                    ctx.lineTo(vx + 100, vy);
+                    ctx.lineTo(vx + 100, vy + 40);
+                    ctx.lineTo(vx, vy + 40);
+                    ctx.lineTo(vx, vy); //绘制最后一笔使图像闭合
+                    ctx.lineWidth = 2;
+                    ctx.fillStyle = "rgb(104,113,130)";
+                    ctx.fill();
+                    ctx.stroke();
+
+
+                    var ch = parseFloat((maxValue - minValue) * y * 2 / cHeight + minValue).toFixed(2);
+
+                    ctx.fillStyle = "white";
+                    ctx.fillText(ch, vx + 50, vy + 30, 50); // 文字
+
+
+                    vx = parseInt(xx + bWidth / 2 - 1) + 20;
+                    vy = canvas.getBoundingClientRect().top + event.pageY * 2 - 90 + 20;
+                    ctx.beginPath();
+                    ctx.moveTo(vx, vy);
+                    ctx.lineTo(vx + 200, vy);
+                    ctx.lineTo(vx + 200, vy + 330);
+                    ctx.lineTo(vx, vy + 330);
+                    ctx.lineTo(vx, vy); //绘制最后一笔使图像闭合
+                    ctx.lineWidth = 2;
+                    ctx.fillStyle = "rgba(104,113,130,0.5)";
+                    ctx.fill();
+                    ctx.stroke();
+
+                    ctx.fillStyle = "white";
+                    ctx.textAlign = "left";
+                    ctx.fillText(dataArr[positionx - 1][0], vx + 20, vy + 30, 150); // 文字
+                    ctx.fillText("开盘价：" + dataArr[positionx - 1][1][0], vx + 20, vy + 70, 150); // 文字
+                    ctx.fillText("收盘价：" + dataArr[positionx - 1][1][1], vx + 20, vy + 105, 150); // 文字
+                    ctx.fillText("最高价：" + dataArr[positionx - 1][1][2], vx + 20, vy + 140, 150); // 文字
+                    ctx.fillText("最低价：" + dataArr[positionx - 1][1][3], vx + 20, vy + 175, 150); // 文字
+                    ctx.fillText("MA5：" + MA5[positionx - 1], vx + 20, vy + 210, 150); // 文字
+                    ctx.fillText("MA10：" + MA10[positionx - 1], vx + 20, vy + 245, 150); // 文字
+                    ctx.fillText("MA20：" + MA20[positionx - 1], vx + 20, vy + 280, 150); // 文字
+                    ctx.fillText("MA30：" + MA30[positionx - 1], vx + 20, vy + 315, 150); // 文字
+
+
+
+
+                } else {
+                    e = e || window.event;
+                    if (e.offsetX || e.offsetX == 0) {
+                        mousePosition.x = e.offsetX;
+                        mousePosition.y = e.offsetY;
+                    } else if (e.layerX || e.layerX == 0) {
+                        mousePosition.x = e.layerX;
+                        mousePosition.y = e.layerY;
+                    }
+
+                    clearTimeout(mouseTimer);
+                    mouseTimer = setTimeout(function () {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        drawLineLabelMarkers();
+                        drawBarAnimate(true);
+                        drawDragBar();
+                    }, 10);
+                }
+
+
+            });
+        }
+
+
+        //监听拖拽
+        canvas.onmousedown = function (e) {
+
+            if (canvas.style.cursor != "all-scroll") {
+                return false;
+            }
+
+            document.onmousemove = function (e) {
+
+
+                e = e || window.event;
+                if (e.offsetX || e.offsetX == 0) {
+                    dragBarX = e.offsetX * 2 - dragBarWidth / 2;
+                } else if (e.layerX || e.layerX == 0) {
+                    dragBarX = e.layerX * 2 - dragBarWidth / 2;
+                }
+
+                if (dragBarX <= originX) {
+                    dragBarX = originX
+                }
+                if (dragBarX > originX + cWidth - dragBarWidth) {
+                    dragBarX = originX + cWidth - dragBarWidth
+                }
+
+                var nb = Math.ceil(dataArr.length * ((dragBarX - cMargin - cSpace) / cWidth));
+                showArr = dataArr.slice(0, nb || 1);
+
+                // 柱状图信息
+                tobalBars = showArr.length;
+                bWidth = parseFloat(cWidth / tobalBars / 3);
+                bMargin = parseFloat((cWidth - bWidth * tobalBars) / (tobalBars + 1));
+
+
+            }
+
+            document.onmouseup = function () {
+                document.onmousemove = null;
+                document.onmouseup = null;
+            }
+        }
+
+
+
+        function getBeveling(x, y) {
+            return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+        }
+
+        function drawDashLine(context, x1, y1, x2, y2, dashLen) {
+            dashLen = dashLen === undefined ? 5 : dashLen;
+            //得到斜边的总长度  
+            var beveling = getBeveling(x2 - x1, y2 - y1);
+            //计算有多少个线段  
+            var num = Math.floor(beveling / dashLen);
+
+            for (var i = 0; i < num; i++) {
+                context[i % 2 == 0 ? 'moveTo' : 'lineTo'](x1 + (x2 - x1) / num * i, y1 + (y2 - y1) / num * i);
+            }
+            context.stroke();
+        }
+
+
+
+
+
+        function calculateMA(dayCount, data) {
+
+            var result = [];
+            for (var i = 0, len = data.length; i < len; i++) {
+                if (i < dayCount) {
+                    result.push("-");
+                    continue;
+                }
+                var sum = 0;
+                for (var j = 0; j < dayCount; j++) {
+                    sum = parseFloat(sum) + parseFloat(data[i - j][1][1]);
+                }
+
+                result.push(parseFloat(parseFloat(sum) / parseFloat(dayCount)).toFixed(2));
+            }
+            return result;
+        }
+    </script>
+</body>
+
+</html>

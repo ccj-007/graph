@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>WebGL</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+    <script src="./gl-matrix-min.js"></script>
+    <script src="https://twgljs.org/dist/4.x/twgl.min.js"></script>
+</head>
+
+<body>
+    <canvas width="800" height="800"></canvas>
+    <script id="vs" type="x-shader/x-vertex">
+        precision mediump float;
+        attribute vec3 position;
+        attribute vec3 color;
+        varying vec3 vColor;
+        uniform mat4 matrix;
+        void main() {
+            vColor = color;
+            gl_Position = matrix * vec4(position, 1);
+        }
+    </script>
+    <script id="fs" type="x-shader/x-fragment">
+        precision mediump float;
+        varying vec3 vColor;
+        void main() {
+            gl_FragColor = vec4(vColor, 1);
+        }
+    </script>
+    <script>
+        const canvas = document.querySelector('canvas');
+        const gl = canvas.getContext('webgl');
+        if (!gl) {
+            throw new Error('WebGL not supported');
+        }
+        const vertexData = [
+            0, 1, 0,    // V1.position
+            1, -1, 0,   // V2.position
+            -1, -1, 0,  // V3.position
+        ];
+        const colorData = [
+            1, 0, 0,    // V1.color
+            0, 1, 0,    // V2.color
+            0, 0, 1,    // V3.color
+        ];
+        const programInfo = twgl.createProgramInfo(gl, ['vs', 'fs']);
+        gl.useProgram(programInfo.program);
+
+        const bufferInfo = twgl.createBufferInfoFromArrays(gl, {
+            position: { numComponents: 3, data: vertexData },
+            color: { numComponents: 3, data: colorData },
+        });
+        twgl.setBuffersAndAttributes(gl, programInfo, bufferInfo);
+
+        const uniforms = {
+            matrix: mat4.create(),
+        };
+        mat4.translate(uniforms.matrix, uniforms.matrix, [.2, .5, 0]);
+        mat4.scale(uniforms.matrix, uniforms.matrix, [0.25, 0.25, 0.25]);
+        function animate() {
+            requestAnimationFrame(animate);
+            mat4.rotateZ(uniforms.matrix, uniforms.matrix, Math.PI / 2 / 70);
+            twgl.setUniforms(programInfo, uniforms);
+            twgl.drawBufferInfo(gl, bufferInfo);
+        }
+        animate();
+    </script>
+
+</body>
+
+</html>
