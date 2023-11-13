@@ -19,7 +19,6 @@
             throw new Error('WebGL not supported');
         }
 
-        // F|L|B|R|T|U
         const vertexData = [
 
             // Front
@@ -70,7 +69,6 @@
             -.5, -.5, -.5,
         ];
 
-        // Construct an Array by repeating `pattern` n times
         function repeat(n, pattern) {
             return [...Array(n)].reduce(sum => sum.concat(pattern), []);
         }
@@ -85,7 +83,6 @@
             0, 0  // bottom left
         ]);
 
-        // F|L|B|R|T|U
         const normalData = [
             ...repeat(6, [0, 0, 1]),    // Z+
             ...repeat(6, [-1, 0, 0]),   // X-
@@ -107,9 +104,7 @@
         gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normalData), gl.STATIC_DRAW);
 
-        // RESOURCE LOADING
-        // ================
-
+        // 加载纹理
         function loadTexture(url) {
             const texture = gl.createTexture();
             const image = new Image();
@@ -134,54 +129,52 @@
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, brick);
 
-        // SHADER PROGRAM
-        // ==============
         let uniformLocations;
         (function shaderProgram() {
             const vertexShader = gl.createShader(gl.VERTEX_SHADER);
             gl.shaderSource(vertexShader, `
-    precision mediump float;
+                precision mediump float;
 
-    const vec3 lightDirection = normalize(vec3(0, 1.0, 1.0));
-    const float ambient = 0.1;
+                const vec3 lightDirection = normalize(vec3(0, 1.0, 1.0));
+                const float ambient = 0.1;
 
-    attribute vec3 position;
-    attribute vec2 uv;
-    attribute vec3 normal;
+                attribute vec3 position;
+                attribute vec2 uv;
+                attribute vec3 normal;
 
-    varying vec2 vUV;
-    varying float vBrightness;
+                varying vec2 vUV;
+                varying float vBrightness;
 
-    uniform mat4 matrix;
-    uniform mat4 normalMatrix;
+                uniform mat4 matrix;
+                uniform mat4 normalMatrix;
 
-    void main() {        
-        vec3 worldNormal = (normalMatrix * vec4(normal, 1)).xyz;
-        float diffuse = max(0.0, dot(worldNormal, lightDirection));
+                void main() {        
+                    vec3 worldNormal = (normalMatrix * vec4(normal, 1)).xyz;
+                    float diffuse = max(0.0, dot(worldNormal, lightDirection));
 
-        vUV = uv;
-        vBrightness = ambient + diffuse;
+                    vUV = uv;
+                    vBrightness = ambient + diffuse;
 
-        gl_Position = matrix * vec4(position, 1);
-    }
-    `);
+                    gl_Position = matrix * vec4(position, 1);
+                }
+           `);
             gl.compileShader(vertexShader);
 
             const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
             gl.shaderSource(fragmentShader, `
-    precision mediump float;
+                precision mediump float;
 
-    varying vec2 vUV;
-    varying float vBrightness;
+                varying vec2 vUV;
+                varying float vBrightness;
 
-    uniform sampler2D textureID;
+                uniform sampler2D textureID;
 
-    void main() {
-        vec4 texel = texture2D(textureID, vUV);
-        texel.xyz *= vBrightness;
-        gl_FragColor = texel;
-    }
-    `);
+                void main() {
+                    vec4 texel = texture2D(textureID, vUV);
+                    texel.xyz *= vBrightness;
+                    gl_FragColor = texel;
+                }
+           `);
             gl.compileShader(fragmentShader);
             console.log(gl.getShaderInfoLog(fragmentShader));
 
@@ -248,10 +241,14 @@
             mat4.rotateX(modelMatrix, modelMatrix, Math.PI / 100);
             mat4.rotateY(modelMatrix, modelMatrix, Math.PI / 200);
 
+            // 得到视图模型矩阵
             mat4.multiply(mvMatrix, viewMatrix, modelMatrix);
+            // 得到视图模型投影矩阵
             mat4.multiply(mvpMatrix, projectionMatrix, mvMatrix);
 
+            // 得到模型视图矩阵的逆矩阵，也就是回退到模型空间防止影响光照计算
             mat4.invert(normalMatrix, mvMatrix);
+            // 转置矩阵 
             mat4.transpose(normalMatrix, normalMatrix);
 
             gl.uniformMatrix4fv(uniformLocations.normalMatrix, false, normalMatrix);
