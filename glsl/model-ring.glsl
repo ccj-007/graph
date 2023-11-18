@@ -100,6 +100,7 @@ void mainImage(out vec4 fragColor,in vec2 fragCoord)
     vec2 uv=(fragCoord-iResolution.xy*.5)/iResolution.y;
     vec3 cam=normalize(vec3(1,uv));
     vec3 init=vec3(-3,0,0);
+    vec4 col=texture(iChannel0,uv).rgba;
     
     float zrot=iTime+3.14;
     float yrot=.2;
@@ -120,12 +121,13 @@ void mainImage(out vec4 fragColor,in vec2 fragCoord)
     vec3 n=norm(p);
     
     float shade=lighting(n,type);
-    vec4 col=texture(iChannel0,uv).rgba;
     
     fragColor=vec4(hit?shade:0.);
+    
     fragColor=sqrt(fragColor);
-    fragColor*=col;
+    
     float num=1.-smoothstep(.48,.51,char((uv+vec2(.85,-.3))*6.,48+type,iChannel1));
     fragColor=max(fragColor,vec4(num));
+    fragColor*=col;
     
 }

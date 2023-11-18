@@ -1,0 +1,66 @@
+<div class="css-chart" style="--size: 200px;">
+    <ul class="line-chart">
+        <li style="--y: 20px; --x: 40px">
+            <div class="data-point" data-value="10"></div>
+            <div class="line-segment" style="--hypotenuse: 44.72;"></div>
+        </li>
+        <li style="--y: 40px; --x: 80px">
+            <div class="data-point" data-value="20"></div>
+            <div class="line-segment" style="--hypotenuse: 56.56;"></div>
+        </li>
+        <li style="--y: 80px; --x: 120px">
+            <div class="data-point" data-value="40"></div>
+            <div class="line-segment" style="--hypotenuse: 56.56;"></div>
+        </li>
+        <li style="--y: 40px; --x: 160px">
+            <div class="data-point" data-value="20"></div>
+            <div class=" line-segment" style="--hypotenuse: 56.56;"></div>
+        </li>
+        <li style="--y: 20px; --x: 200px">
+            <div class="data-point" data-value="10"></div>
+        </li>
+    </ul>
+</div>
+
+<style>
+    .css-chart {
+        /* 模拟坐标系 */
+        border-bottom: 1px solid;
+        border-left: 1px solid;
+        /* 在 html 中定义宽高 */
+        height: var(--size);
+        width: var(--size);
+
+        margin: 1em;
+        padding: 0;
+        position: relative;
+    }
+
+    .line-chart {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .data-point {
+        background-color: rgb(14, 41, 163);
+        border: 2px solid rgb(14, 41, 163);
+        border-radius: 50%;
+        width: 10px;
+        height: 10px;
+        position: absolute;
+        transform: translateX(-5px);
+
+        bottom: calc(var(--y) - 5px);
+        left: calc(var(--x) - 5px);
+    }
+
+    .line-segment {
+        background-color: blue;
+        bottom: var(--y);
+        height: 3px;
+        left: var(--x);
+        position: absolute;
+        width: calc(var(--hypotenuse) * 1px);
+    }
+</style>

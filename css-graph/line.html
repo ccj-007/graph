@@ -1,0 +1,50 @@
+<div class="css-chart" style="--size: 200px;">
+    <ul class="line-chart">
+        <li>
+            <div class="data-point" data-value="10" style="bottom: 20px; left: 40px;"></div>
+        </li>
+        <li>
+            <div class="data-point" data-value="20" style="bottom: 40px; left: 80px;"></div>
+        </li>
+        <li>
+            <div class="data-point" data-value="40" style="bottom: 80px; left: 120px;"></div>
+        </li>
+        <li>
+            <div class="data-point" data-value="20" style="bottom: 40px; left: 160px;"></div>
+        </li>
+        <li>
+            <div class="data-point" data-value="10" style="bottom: 20px; left: 200px;"></div>
+        </li>
+    </ul>
+</div>
+
+<style>
+    .css-chart {
+        /* 模拟坐标系 */
+        border-bottom: 1px solid;
+        border-left: 1px solid;
+        /* 在 html 中定义宽高 */
+        height: var(--size);
+        width: var(--size);
+
+        margin: 1em;
+        padding: 0;
+        position: relative;
+    }
+
+    .line-chart {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .data-point {
+        background-color: rgb(14, 41, 163);
+        border: 2px solid rgb(14, 41, 163);
+        border-radius: 50%;
+        width: 10px;
+        height: 10px;
+        position: absolute;
+        transform: translateX(-5px);
+    }
+</style>

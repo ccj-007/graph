@@ -15,7 +15,6 @@ vec2 edge(vec2 p){
     if(p2.x>p2.y)return vec2((p.x<0.)?-1.:1.,0.);
     else return vec2(0.,(p.y<0.)?-1.:1.);
 }
-
 // 计算场景形状
 float scene(vec3 p){
     vec2 center=floor(p.xy)+.5;
@@ -68,10 +67,21 @@ void mainImage(out vec4 fragColor,in vec2 fragCoord)
     vec3 n=norm(p);
     // 得到反射向量 r
     vec3 r=reflect(cam,n);
-    float col=length(sin(r*2.)*.5+.5)/sqrt(3.);
+    float col=length(sin(r*2.)*.5+.5)/sqrt(1.);
     col=col*.1+pow(col,3.);
     
     // 控制渲染背景与物体
     fragColor=hit?vec4(col):vec4(.8);
     fragColor=sqrt(fragColor);
+    
+    // 处理纹理
+    uv=p.xy;
+    vec4 imgCol=vec4(0.);
+    vec4 colXZ=texture(iChannel0,p.xz).rgba;
+    vec4 colYZ=texture(iChannel0,p.yz).rgba;
+    vec4 colXY=texture(iChannel0,p.xy).rgba;
+    
+    n=abs(n);
+    imgCol=colXZ*n.y+colYZ*n.x+colXY*n.z;
+    fragColor*=imgCol;
 }

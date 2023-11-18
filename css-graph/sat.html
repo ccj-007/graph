@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>SAT Collision Detection Demo</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas" width="400" height="400"></canvas>
+
+    <script>
+        // 获取 Canvas 元素和上下文
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // 定义四边形的顶点坐标
+        const quadPoints = [
+            { x: 100, y: 100 },
+            { x: 200, y: 100 },
+            { x: 200, y: 200 },
+            { x: 100, y: 200 }
+        ];
+
+        // 定义六边形的顶点坐标
+        const hexPoints = [
+            { x: 250, y: 150 },
+            { x: 300, y: 100 },
+            { x: 350, y: 150 },
+            { x: 350, y: 250 },
+            { x: 300, y: 300 },
+            { x: 250, y: 250 }
+        ];
+
+        // 绘制多边形
+        function drawPolygon(points, color) {
+            ctx.beginPath();
+            ctx.moveTo(points[0].x, points[0].y);
+            for (let i = 1; i < points.length; i++) {
+                ctx.lineTo(points[i].x, points[i].y);
+            }
+            ctx.closePath();
+            ctx.fillStyle = color;
+            ctx.fill();
+        }
+
+        // 绘制场景
+        function drawScene() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            drawPolygon(quadPoints, 'blue');
+            drawPolygon(hexPoints, 'green');
+        }
+
+        // SAT 碰撞检测
+        function checkCollision() {
+            // 检查四边形和六边形是否相交的逻辑
+
+            // TODO: 实现 SAT 碰撞检测算法
+
+            return false; // 假设没有碰撞
+        }
+
+        // 更新画面
+        function update() {
+            drawScene();
+
+            if (checkCollision()) {
+                // 发生碰撞的处理逻辑
+                console.log('Collision detected!');
+            }
+
+            requestAnimationFrame(update);
+        }
+
+        // 启动动画循环
+        update();
+    </script>
+</body>
+
+</html>

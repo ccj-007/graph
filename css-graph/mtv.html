@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        canvas {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas" width="400" height="400"></canvas>
+
+    <script>
+        // 获取 Canvas 元素和上下文
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // 定义多边形的顶点坐标
+        const polygon1 = [
+            { x: 100, y: 100 },
+            { x: 200, y: 100 },
+            { x: 200, y: 200 },
+            { x: 100, y: 200 }
+        ];
+
+        const polygon2 = [
+            { x: 150, y: 150 },
+            { x: 100, y: 100 },
+            { x: 350, y: 150 },
+            { x: 350, y: 250 },
+            { x: 300, y: 300 },
+            { x: 250, y: 250 }
+        ];
+
+        // 绘制多边形
+        function drawPolygon(points, color) {
+            ctx.beginPath();
+            ctx.moveTo(points[0].x, points[0].y);
+            for (let i = 1; i < points.length; i++) {
+                ctx.lineTo(points[i].x, points[i].y);
+            }
+            ctx.closePath();
+            ctx.fillStyle = color;
+            ctx.fill();
+        }
+
+        // 计算两个多边形之间的最小平移向量
+        function calculateMTV(polygon1, polygon2) {
+            let minOverlap = Infinity;
+            let smallestAxis = null;
+
+            // 获取多边形的边和法向量
+            const axes = getAxes(polygon1.concat(polygon2));
+
+            for (const axis of axes) {
+                // 投影1
+                const projection1 = project(polygon1, axis);
+                // 投影2
+                const projection2 = project(polygon2, axis);
+
+                // 计算投影的重叠量
+                const overlap = getOverlap(projection1, projection2);
+
+                if (overlap === 0) {
+                    // 发生分离，没有碰撞
+                    return null;
+                } else {
+                    // 更新最小重叠量和对应的法向量
+                    if (overlap < minOverlap) {
+                        minOverlap = overlap;
+                        smallestAxis = axis;
+                    }
+                }
+            }
+
+            // 返回最小平移向量
+            return { x: smallestAxis.x * minOverlap, y: smallestAxis.y * minOverlap };
+        }
+
+        // 获取多边形的边和法向量
+        function getAxes(points) {
+            const axes = [];
+            for (let i = 0; i < points.length; i++) {
+                const p1 = points[i];
+                const p2 = points[(i + 1) % points.length];
+                const edge = { x: p2.x - p1.x, y: p2.y - p1.y };
+                const axis = { x: -edge.y, y: edge.x };
+                const normalizedAxis = normalize(axis);
+                axes.push(normalizedAxis);
+            }
+            return axes;
+        }
+
+        // 归一化向量
+        function normalize(vector) {
+            const magnitude = Math.sqrt(vector.x * vector.x + vector.y * vector.y);
+            return { x: vector.x / magnitude, y: vector.y / magnitude };
+        }
+
+        // 在给定轴上投影多边形
+        function project(points, axis) {
+            let min = Infinity;
+            let max = -Infinity;
+            for (const point of points) {
+                const projection = point.x * axis.x + point.y * axis.y;
+                min = Math.min(min, projection);
+                max = Math.max(max, projection);
+            }
+            return { min, max };
+        }
+
+        // 计算投影的重叠量
+        function getOverlap(projection1, projection2) {
+            return Math.min(projection1.max, projection2.max) - Math.max(projection1.min, projection2.min);
+        }
+
+        // 绘制场景
+        function drawScene() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 绘制多边形1
+            drawPolygon(polygon1, 'blue');
+
+            // 绘制多边形2
+            drawPolygon(polygon2, 'green');
+
+            // 计算最小平移向量
+            const mtv = calculateMTV(polygon1, polygon2);
+
+            // 可视化绘制演示
+            if (mtv) {
+                // 绘制最小平移向量
+                ctx.beginPath();
+                ctx.moveTo(polygon2[0].x, polygon2[0].y);
+                ctx.lineTo(polygon2[0].x + mtv.x, polygon2[0].y + mtv.y);
+                ctx.strokeStyle = 'red';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+        }
+
+        // 更新画面
+        function update() {
+            drawScene();
+            requestAnimationFrame(update);
+        }
+
+        // 启动动画循环
+        update();
+    </script>
+</body>
+
+</html>
