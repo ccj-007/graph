@@ -575,28 +575,299 @@ function hmrAccept(bundle /*: ParcelRequire */ , id /*: string */ ) {
 }
 
 },{}],"4hitL":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "render", ()=>render);
 var _option = require("./option");
-const myCanvas = document.getElementById("myCanvas");
-const ctx = myCanvas.getContext("2d");
-const dpr = window.devicePixelRatio;
-ctx.width = myCanvas.style.width * dpr;
-ctx.height = myCanvas.style.height * dpr;
-// 坐标系转换
-function requestAnimation() {
-    requestAnimationFrame(requestAnimation);
-    ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
-    ctx.fillStyle = "red";
-    ctx.fillRect(0, 0, 100, 100);
+const { grid: { left, right, bottom, top }, area, xAxis, yAxis, series, global } = (0, _option.option);
+const { upColor, downColor } = series[0].itemStyle;
+const TIME_HALF_TEXT = 20;
+const times = xAxis.data;
+const kList = series[0].data;
+const kLen = kList.length;
+/** 是否是第一次渲染 */ let firstInto = true;
+const view = {
+    /** 时间集合 */ times: [],
+    /** k线图集合 */ kList: [],
+    /** y轴标签集合 */ yLabels: [],
+    /** x轴刻度x坐标集合 */ xTicks: [],
+    /** k线渲染个数 */ kLen: kList.length,
+    /** k线区域坐标 */ lb: {
+        x: 0,
+        y: 0
+    },
+    rt: {
+        x: 0,
+        y: 0
+    },
+    rb: {
+        x: 0,
+        y: 0
+    },
+    lt: {
+        x: 0,
+        y: 0
+    },
+    /** k线区域尺寸 */ width: 0,
+    height: 0,
+    /** 实心宽度 */ solidWidth: 0,
+    /** 绘图区域Y轴的val范围 */ yMaxVal: 0,
+    yMinVal: 0,
+    yAreaVal: 0,
+    /** 安全区域Y轴的val范围 */ yMaxSafeVal: 0,
+    yMinSafeVal: 0,
+    /** 范围id */ start: area.start,
+    end: area.end,
+    /** 鼠标位置 */ pointer: {
+        x: 0,
+        y: 0,
+        inner: false
+    }
+};
+const canvas = document.getElementById("myCanvas");
+const ctx = canvas.getContext("2d");
+const dpr = window.devicePixelRatio || 1;
+const width = canvas.width;
+const height = canvas.height;
+canvas.width = canvas.width * dpr;
+canvas.height = canvas.height * dpr;
+// 原点设置为左下角
+canvas.style.transform = "scaleY(-1)";
+canvas.style.transform = `translate(${canvas.width})`;
+function drawAxisX() {
+    const { lb, rb } = view;
+    drawLine(lb.x, lb.y, rb.x, rb.y, global.bgLineColor);
 }
-requestAnimation();
+function drawAxisY() {
+    const { lb, lt } = view;
+    drawLine(lb.x, lb.y, lt.x, lt.y, global.bgLineColor);
+}
+function drawScaleX() {
+    view.xTicks.forEach((x)=>{
+        ctx.beginPath();
+        ctx.moveTo(x, view.lb.y);
+        ctx.lineTo(x, view.lb.y - 10);
+        ctx.stroke();
+    });
+    ctx.save();
+    // 垂直翻转
+    ctx.scale(1, -1);
+    view.xTicks.forEach((x, index)=>{
+        ctx.fillStyle = global.textColor;
+        ctx.fillText(view.times[index], x - TIME_HALF_TEXT, -(view.lb.y - 20));
+    });
+    ctx.restore();
+}
+function drawScaleY() {
+    const { lb, height } = view;
+    const divide = height / (view.yLabels.length - 1);
+    ctx.save();
+    // 垂直翻转
+    ctx.scale(1, -1);
+    view.yLabels.forEach((val, index)=>{
+        ctx.fillStyle = global.textColor;
+        ctx.fillText(val, 2, -(lb.y + index * divide - 3));
+    });
+    ctx.restore();
+}
+function drawGrid() {
+    const divide = height / view.yLabels.length;
+    const { lb, rb } = view;
+    view.yLabels.forEach((val, index)=>{
+        if (index) {
+            const y = lb.y + index * divide;
+            drawLine(lb.x, y, rb.x, y, global.bgLineColor);
+        }
+    });
+}
+function drawHelpLine() {
+    const { pointer: { x, y, inner } } = view;
+    if (inner) {
+        ctx.save();
+        ctx.setLineDash([
+            5,
+            5
+        ]);
+        drawLine(x, view.lb.y, x, view.lt.y, global.helpColor);
+        drawLine(view.lb.x, y, view.rt.x, y, global.helpColor);
+        ctx.restore();
+    }
+}
+function drawK() {
+    view.kList.forEach((item, index)=>{
+        drawCandle(item, view.times[index]);
+    });
+}
+function draw() {
+    drawAxisX();
+    drawAxisY();
+    drawScaleX();
+    drawScaleY();
+    drawGrid();
+    drawHelpLine();
+    drawK();
+}
+function watchEvent() {
+    firstInto = false;
+    window.addEventListener("mousemove", (e)=>{
+        const { clientX, clientY } = e;
+        const pos = canvas.getBoundingClientRect();
+        const leftInner = clientX - pos.left - left;
+        const topInner = clientY - pos.top - top;
+        if (leftInner >= 0 && leftInner <= view.width && topInner >= 0 && topInner <= view.height) {
+            view.pointer.x = clientX - pos.left;
+            view.pointer.y = height - (clientY - pos.top);
+            view.pointer.inner = true;
+            console.log("\uD83D\uDE80 ~ file: app.js:144 ~ window.addEventListener ~ view.pointer:", view.pointer);
+        } else {
+            view.pointer.inner = false;
+            console.log("\u8D85\u51FA\u533A\u57DF");
+        }
+    });
+}
+function limitArea() {
+    const start_id = Math.floor(view.start * kLen / 100);
+    const end_id = Math.floor(view.end * kLen / 100);
+    view.times = times.slice(start_id, end_id + 1);
+    view.kList = kList.slice(start_id, end_id + 1);
+    view.kLen = view.kList.length;
+}
+/**
+ * 计算视口数据
+ */ function calcView() {
+    // 计算视口坐标
+    view.lb = {
+        x: left,
+        y: bottom + xAxis.offset
+    };
+    view.rt = {
+        x: width - right,
+        y: height - top
+    };
+    view.rb = {
+        x: width - right,
+        y: bottom + xAxis.offset
+    };
+    view.lt = {
+        x: left,
+        y: height - top
+    };
+    view.width = view.rb.x - view.lb.x;
+    view.height = view.rt.y - view.rb.y;
+    // 计算 y 轴的范围值
+    let max_value = 0, min_value = Infinity;
+    view.kList.forEach((item)=>{
+        max_value = Math.max(max_value, ...item);
+        min_value = Math.min(min_value, ...item);
+    });
+    const step = 5;
+    view.yMaxSafeVal = max_value;
+    view.yMinSafeVal = min_value;
+    const min_integer = Math.floor(min_value - min_value % 10);
+    const max_integer = Math.floor(max_value + (10 - max_value % 10));
+    const distance = 20;
+    view.yMinVal = min_integer - distance;
+    view.yMaxVal = max_integer + distance;
+    view.yAreaVal = view.yMaxVal - view.yMinVal;
+    const size = Math.floor(view.yAreaVal / step);
+    // 计算y的label集合
+    let yLabels = [
+        view.yMinVal
+    ];
+    let curY = view.yMinVal;
+    for(let i = 0; i < step; i++){
+        curY = curY + size;
+        yLabels.push(curY);
+    }
+    view.yLabels = yLabels;
+    // 计算实体宽度
+    view.solidWidth = +(view.width / (view.kLen * 2)).toFixed(2);
+    // 计算 x 轴刻度坐标
+    const xDivide = view.width / (view.times.length - 1);
+    let xTicks = [];
+    view.times.forEach((item, index)=>{
+        xTicks.push(+(index * xDivide + view.lb.x).toFixed(2));
+    });
+    view.xTicks = xTicks;
+}
+function drawLine(x, y, X, Y, color = "#fff") {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(X, Y);
+    ctx.stroke();
+    ctx.closePath();
+}
+// y 数值转为y轴坐标
+function y_toPos(val) {
+    const { height, yAreaVal, yMinSafeVal, yMaxSafeVal, yMinVal, yMaxVal, lb } = view;
+    const safeBottomH = (yMinSafeVal - yMinVal) / yAreaVal * height;
+    const safeTopH = (yMaxVal - yMaxSafeVal) / yAreaVal * height;
+    const valH = (val - yMinSafeVal) / (yMaxSafeVal - yMinSafeVal) * (height - safeBottomH - safeTopH);
+    return +(lb.y + safeBottomH + valH).toFixed(2);
+}
+// x 数值转为x轴坐标
+function x_toPos(name) {
+    const idx = view.times.findIndex((item)=>item === name);
+    const x_divide = view.width / (view.kLen - 1);
+    return +(view.lb.x + x_divide * idx).toFixed(2);
+}
+/**
+ * 蜡烛图
+ * 
+ * @param {number} x  中心点x
+ * @param {number} y  中心点y
+ * @param {number} w  宽度
+ * @param {Array} item [open，close，lowest，highest]
+ */ function drawCandle(item, name) {
+    // 缩放后的 实心底部， 实心顶部，lowest，highest的y值
+    const solidBottom = Math.min(y_toPos(item[0]), y_toPos(item[1]));
+    const solidTop = Math.max(y_toPos(item[0]), y_toPos(item[1]));
+    const lowest = y_toPos(item[2]);
+    const highest = y_toPos(item[3]);
+    const h = Math.abs(solidTop - solidBottom);
+    const w = view.solidWidth;
+    const half_w = w * .5;
+    const half_h = h * .5;
+    const isUp = item[1] > item[0];
+    const color = isUp ? upColor : downColor;
+    // 实心区域中心点
+    const center = {
+        x: x_toPos(name),
+        y: solidBottom + half_h
+    };
+    // 绘制蜡烛图的上下影线
+    ctx.strokeStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(center.x, highest);
+    ctx.lineTo(center.x, lowest);
+    ctx.stroke();
+    // 绘制蜡烛图的实体部分
+    ctx.fillStyle = color;
+    ctx.fillRect(center.x - half_w, center.y - half_h, w, h);
+}
+function requestAnimation() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // 背景色
+    ctx.fillStyle = global.bgColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    limitArea();
+    calcView();
+    // 监听事件
+    if (firstInto) watchEvent();
+    draw();
+    requestAnimationFrame(requestAnimation);
+}
+function render() {
+    requestAnimation();
+}
 
-},{"./option":"96cNx"}],"96cNx":[function(require,module,exports) {
+},{"./option":"96cNx","@parcel/transformer-js/src/esmodule-helpers.js":"fF8Uh"}],"96cNx":[function(require,module,exports) {
+// Each item: open，close，lowest，highest
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "option", ()=>option);
-const upColor = "#ec0000";
-const downColor = "#00da3c";
-// Each item: open，close，lowest，highest
 const data0 = splitData([
     [
         "2013/1/24",
@@ -609,15 +880,15 @@ const data0 = splitData([
         "2013/1/25",
         2300,
         2291.3,
-        2288.26,
+        2218.26,
         2308.38
     ],
     [
         "2013/1/28",
         2295.35,
         2346.5,
-        2295.35,
-        2346.92
+        2215.35,
+        2396.92
     ],
     [
         "2013/1/29",
@@ -1245,35 +1516,35 @@ function calculateMA(dayCount) {
 }
 const option = {
     grid: {
-        left: "10%",
-        right: "10%",
-        bottom: "15%",
-        top: "10%"
+        left: 30,
+        right: 30,
+        bottom: 15,
+        top: 20
     },
     xAxis: {
-        data: data0.categoryData
+        data: data0.categoryData,
+        offset: 30
     },
-    dataZoom: [
-        {
-            type: "inside",
-            start: 50,
-            end: 100
-        },
-        {
-            show: true,
-            type: "slider",
-            top: "90%",
-            start: 50,
-            end: 100
-        }
-    ],
+    global: {
+        bgColor: "#171b26",
+        bgLineColor: "#252834",
+        textColor: "#aeb1ba",
+        helpColor: "#fff"
+    },
+    yAxis: {
+        offset: 30
+    },
+    area: {
+        start: 20,
+        end: 30
+    },
     series: [
         {
             name: "\u65E5K",
             data: data0.values,
             itemStyle: {
-                color: upColor,
-                color0: downColor
+                upColor: "#f23645",
+                downColor: "#089981"
             }
         },
         // 5 日均线

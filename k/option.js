@@ -1,10 +1,9 @@
-const upColor = "#ec0000";
-const downColor = "#00da3c";
+
 // Each item: open，close，lowest，highest
 const data0 = splitData([
     ["2013/1/24", 2320.26, 2320.26, 2287.3, 2362.94],
-    ["2013/1/25", 2300, 2291.3, 2288.26, 2308.38],
-    ["2013/1/28", 2295.35, 2346.5, 2295.35, 2346.92],
+    ["2013/1/25", 2300, 2291.3, 2218.26, 2308.38],
+    ["2013/1/28", 2295.35, 2346.5, 2215.35, 2396.92],
     ["2013/1/29", 2347.22, 2358.98, 2337.35, 2363.8],
     ["2013/1/30", 2360.75, 2382.48, 2347.89, 2383.76],
     ["2013/1/31", 2383.43, 2385.42, 2371.23, 2391.82],
@@ -121,26 +120,31 @@ function calculateMA(dayCount) {
     return result;
 }
 const option = {
-    grid: { left: "10%", right: "10%", bottom: "15%", top: "10%" },
+    grid: { left: 40, right: 40, bottom: 15, top: 20 },
     xAxis: {
         data: data0.categoryData,
+        offset: 30
     },
-    dataZoom: [
-        {
-            type: "inside",
-            start: 50,
-            end: 100,
-        },
-        { show: true, type: "slider", top: "90%", start: 50, end: 100 },
-    ],
+    theme: {
+        bgColor: "#171b26",
+        bgLineColor: '#252834',
+        textColor: '#aeb1ba',
+        helpColor: '#fff',
+        upColor: '#f23645',
+        downColor: '#089981',
+        helpLabelfontSize: 10
+    },
+    yAxis: {
+        offset: 30,
+    },
+    area: {
+        start: 20,
+        end: 40,
+    },
     series: [
         {
             name: "日K",
             data: data0.values,
-            itemStyle: {
-                color: upColor,
-                color0: downColor,
-            },
         },
         // 5 日均线
         {
@@ -148,7 +152,8 @@ const option = {
             type: "line",
             data: calculateMA(5),
             smooth: true,
-            lineStyle: { opacity: 0.5 },
+            lineStyle: { opacity: 0.5, color: '#5e79c9' },
+            color: ''
         },
         // 10 日均线
         {
@@ -156,7 +161,9 @@ const option = {
             type: "line",
             data: calculateMA(10),
             smooth: true,
-            lineStyle: { opacity: 0.5 },
+            lineStyle: { opacity: 0.5, color: '#9fd286' },
+            color: ''
+
         },
         // 20 日均线
         {
@@ -164,7 +171,7 @@ const option = {
             type: "line",
             data: calculateMA(20),
             smooth: true,
-            lineStyle: { opacity: 0.5 },
+            lineStyle: { opacity: 0.5, color: '#face6c' },
         },
         // 30 日均线
         {
@@ -174,7 +181,9 @@ const option = {
             smooth: true,
             lineStyle: {
                 opacity: 0.5,
+                color: '#f07575'
             },
+
         },
     ],
 };
