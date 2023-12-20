@@ -1,0 +1,58 @@
+.Forest {
+    position: relative;
+    overflow: hidden;
+    padding: 0 !important;
+}
+
+.Forest>.node,
+.Forest>.pseudo {
+    position: absolute;
+    display: block;
+    visibility: hidden;
+}
+
+.Forest.Forest-loaded .node,
+.Forest.Forest-loaded .pseudo {
+    visibility: visible;
+}
+
+.Forest>.pseudo {
+    width: 0;
+    height: 0;
+    border: none;
+    padding: 0;
+}
+
+.Forest .collapse-switch {
+    width: 10px;
+    height: 10px;
+    display: block;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 1px;
+    background-color: #86e2ee;
+    cursor: pointer;
+    border-radius: 50%;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.Forest .collapse-switch::after {
+    content: '-';
+}
+
+.Forest .collapsed .collapse-switch {
+    background-color: #86e2ee;
+}
+
+.Forest .collapsed .collapse-switch::after {
+    content: '+';
+}
+
+.Forest>.node img {
+    border: none;
+    float: left;
+}
