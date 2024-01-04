@@ -1,1 +1,0 @@
-{"mappings":"AAAA,kDAAkD;AAClD,wCAAwC;AAExC,uCAAuC","sources":["k/index.js"],"sourcesContent":["// var chartDom = document.getElementById('main');\r\n// var myChart = echarts.init(chartDom);\r\n\r\n// option && myChart.setOption(option);"],"names":[],"version":3,"file":"index.10416404.js.map","sourceRoot":"/__parcel_source_root/"}
