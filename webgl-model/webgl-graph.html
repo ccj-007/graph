@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>WebGL Scatter Plot Demo</title>
+    <style>
+        canvas {
+            border: 1px solid #000;
+        }
+    </style>
+</head>
+
+<body>
+    <div style="display: flex;">
+        <div>
+            <p>Canvas:</p>
+            <canvas id="scatterPlotCanvas" width="600" height="300"></canvas>
+        </div>
+        <div>
+            <p>WebGL:</p>
+            <canvas id="scatterPlotCanvasWebgl" width="600" height="300"></canvas>
+        </div>
+    </div>
+    <script>
+        const DATA_NUM = 100000
+        console.log("数据量：", DATA_NUM)
+    </script>
+
+    <script>
+        // 获取 WebGL 上下文对象
+        const canvas = document.getElementById('scatterPlotCanvasWebgl');
+        const gl = canvas.getContext('webgl');
+
+        // 创建顶点着色器
+        const vertexShaderSource = `
+        attribute vec2 a_position;
+        void main() {
+          gl_Position = vec4(a_position, 0.0, 1.0);
+          gl_PointSize = 3.5;
+        }
+      `;
+        const vertexShader = gl.createShader(gl.VERTEX_SHADER);
+        gl.shaderSource(vertexShader, vertexShaderSource);
+        gl.compileShader(vertexShader);
+
+        // 创建片元着色器
+        const fragmentShaderSource = `
+        precision mediump float;
+        void main() {
+          gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0);
+        }
+      `;
+        const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+        gl.shaderSource(fragmentShader, fragmentShaderSource);
+        gl.compileShader(fragmentShader);
+
+        // 创建着色器程序
+        const program = gl.createProgram();
+        gl.attachShader(program, vertexShader);
+        gl.attachShader(program, fragmentShader);
+        gl.linkProgram(program);
+        gl.useProgram(program);
+
+        // 创建顶点缓冲区
+        const positionBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+
+        // 模拟万级数据
+        const dataPoints = [];
+        const numPoints = DATA_NUM;
+        for (let i = 0; i < numPoints; i++) {
+            const x = Math.random() * 2 - 1; // 将坐标范围映射到 [-1, 1]
+            const y = Math.random() * 2 - 1;
+            dataPoints.push(x, y);
+        }
+        const positions = new Float32Array(dataPoints);
+
+        // 将顶点数据写入缓冲区
+        gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
+
+        // 获取 attribute 变量的位置
+        const positionAttributeLocation = gl.getAttribLocation(program, 'a_position');
+        gl.enableVertexAttribArray(positionAttributeLocation);
+
+        // 告诉 WebGL 如何解析顶点数据
+        gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
+
+        // 清空画布并绘制散点图
+        gl.clearColor(1.0, 1.0, 1.0, 1.0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        console.time('webgl render time'); // 开始计时
+
+        gl.drawArrays(gl.POINTS, 0, numPoints);
+
+        console.timeEnd('webgl render time'); // 输出渲染时间
+    </script>
+
+    <script>
+        // 获取 Canvas 元素和上下文对象
+        const canvas2 = document.getElementById('scatterPlotCanvas');
+        const ctx2 = canvas2.getContext('2d');
+
+        // 模拟万级数据
+        const dataPoints2 = [];
+        const numPoints2 = DATA_NUM;
+        for (let i = 0; i < numPoints2; i++) {
+            const x = Math.random() * canvas2.width;
+            const y = Math.random() * canvas2.height;
+            dataPoints2.push({ x, y });
+        }
+
+        // 绘制散点图
+        ctx2.strokeStyle = 'transparent';
+        ctx2.fillStyle = 'blue';
+        ctx2.lineWidth = 0;
+
+        console.time('canvas render time'); // 开始计时
+
+        for (let i = 0; i < dataPoints2.length; i++) {
+            const { x, y } = dataPoints2[i];
+
+            ctx2.beginPath();
+            ctx2.rect(x, y, 3.5, 3.5)
+            ctx2.fill();
+            ctx2.stroke();
+        }
+
+        console.timeEnd('canvas render time'); // 输出渲染时长
+    </script>
+
+</body>
+
+</html>

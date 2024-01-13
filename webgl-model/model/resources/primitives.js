@@ -527,18 +527,17 @@
    *         created plane vertices.
    * @memberOf module:primitives
    */
-  function createCubeVertices (size) {
+  function createCubeVertices (size, h = 1) {
     const k = size / 2;
-
     const cornerVertices = [
-      [-k, -k, -k],
-      [+k, -k, -k],
-      [-k, +k, -k],
-      [+k, +k, -k],
-      [-k, -k, +k],
-      [+k, -k, +k],
-      [-k, +k, +k],
-      [+k, +k, +k],
+      [-k, -k * h, -k],
+      [+k, -k * h, -k],
+      [-k, +k * h, -k],
+      [+k, +k * h, -k],
+      [-k, -k * h, +k],
+      [+k, -k * h, +k],
+      [-k, +k * h, +k],
+      [+k, +k * h , +k],
     ];
 
     const faceNormals = [

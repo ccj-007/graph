@@ -1,0 +1,158 @@
+<!-- Licensed under a BSD license. See license.html for license -->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>WebGL - Multiple Objects - List</title>
+    <style>
+        body {
+            background-color: #292929;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="description">
+        Draw multiple objects using a list
+    </div>
+    <canvas id="canvas"></canvas>
+</body>
+<script src="resources/webgl-utils.js"></script>
+<script src="resources/m4.js"></script>
+<script src="resources/primitives.js"></script>
+<!-- vertex shader -->
+<script id="vertex-shader-3d" type="x-shader/x-vertex">
+attribute vec4 a_position;
+attribute vec4 a_color;
+
+uniform mat4 u_matrix;
+
+varying vec4 v_color;
+
+void main() {
+  gl_Position = u_matrix * a_position;
+
+  v_color = a_color;
+}
+</script>
+<!-- fragment shader -->
+<script id="fragment-shader-3d" type="x-shader/x-fragment">
+precision mediump float;
+
+varying vec4 v_color;
+
+uniform vec4 u_colorMult;
+
+void main() {
+   gl_FragColor = v_color * u_colorMult;
+}
+</script>
+<script>
+    const option = {
+        data: [80, 40, 60, 50, 30],
+        color: [[1, 1.5, 0.5, 1], [1, 0.2, 0.5, 1], [1, 0.5, 0.1, 1], [0.8, 0.8, 0.8, 1], [0.2, 0.5, 0.1, 1]],
+        size: 15,
+        distance: 5
+    }
+
+    function main() {
+        const canvas = document.querySelector("#canvas");
+        canvas.width = window.innerWidth
+        canvas.height = window.innerHeight
+        const gl = canvas.getContext("webgl");
+
+        const programInfo = webglUtils.createProgramInfo(gl, ["vertex-shader-3d", "fragment-shader-3d"]);
+
+        function degToRad(d) {
+            return d * Math.PI / 180;
+        }
+
+        const fieldOfViewRadians = degToRad(70);
+        const cameraHeight = 50;
+
+        // 每个对象的常量和缓冲区配置
+        const objectsToDraw = option.data.map((item, index) => {
+            const h = item / option.size
+            // 缓冲区对象（position, normal, texcoord, vertex color）
+            const cubeBufferInfo = primitives.createCubeWithVertexColorsBufferInfo(gl, option.size, h);
+            return {
+                programInfo: programInfo,
+                bufferInfo: cubeBufferInfo,
+                uniforms: {
+                    u_colorMult: option.color[index],
+                    u_matrix: m4.identity()
+                },
+            }
+        })
+
+        function computeMatrix(viewProjectionMatrix, translation, translationH) {
+            return m4.translate(m4.translate(viewProjectionMatrix,
+                translation[0],
+                translation[1],
+                translation[2]),
+                translationH[0],
+                translationH[1],
+                translationH[2]);
+        }
+
+        requestAnimationFrame(drawScene);
+
+        function drawScene(time) {
+            time *= 0.0005;
+
+            webglUtils.resizeCanvasToDisplaySize(gl.canvas);
+
+            gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
+            gl.enable(gl.CULL_FACE);
+            gl.enable(gl.DEPTH_TEST);
+
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+            const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+            const projectionMatrix =
+                m4.perspective(fieldOfViewRadians, aspect, 1, 2000);
+
+            // 配置相机
+            const cameraPosition = [0, 30, 100];
+            const target = [0, 0, 0];
+            const up = [0, 1, 0];
+            const cameraMatrix = m4.lookAt(cameraPosition, target, up);
+
+            // Make a view matrix from the camera matrix.
+            const viewMatrix = m4.inverse(cameraMatrix);
+
+            const viewProjectionMatrix = m4.multiply(projectionMatrix, viewMatrix);
+
+            const cubeXRotation = -time;
+            const cubeYRotation = time;
+            const cubeTranslation = [-40, -50, 0];
+
+            // 渲染
+            objectsToDraw.forEach(function (object, index) {
+                object.uniforms.u_matrix = computeMatrix(
+                    viewProjectionMatrix,
+                    cubeTranslation, [1, option.data[index] / 2, 1]);
+                cubeTranslation[0] += (option.distance + option.size)
+
+                const programInfo = object.programInfo;
+                const bufferInfo = object.bufferInfo;
+
+                gl.useProgram(programInfo.program);
+
+                webglUtils.setBuffersAndAttributes(gl, programInfo, bufferInfo);
+
+                webglUtils.setUniforms(programInfo, object.uniforms);
+
+                gl.drawArrays(gl.TRIANGLES, 0, bufferInfo.numElements);
+            });
+            requestAnimationFrame(drawScene);
+        }
+    }
+
+    main();
+</script>
+
+</html>
